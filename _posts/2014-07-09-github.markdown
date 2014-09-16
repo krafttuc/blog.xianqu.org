@@ -1,0 +1,16 @@
+---
+layout: post
+title: "GitHub"
+description:
+date: 2014-07-09 16:53:02 +0800
+comments: true
+categories:
+cover_image:
+tags:
+---
+
+About three days ago, [GitHub](https://github.com/), a web-based hosting service for software development projects, sent me an email, in which they told me that my plan was going to expire in 7 days. It reminded me that I had been using GitHub private features for almost two years. How time flies!
+
+Two years ago, to be more accurate, in the summer of 2012, I was a little undergraduate student who was going to start an internship at a startup company. Like most of my classmates, I had made a few toys at school but never worked on a real software project before. A commercial software product is totally different from a course toy. It should be designed well and have high quality. Therefore I searched the Internet for open-source projects in order to find some inspiration. To my surprise, a lot of excellent projects were hosted on GitHub. I had used GitHub before, but I had only put my course assignments there. I had never noticed the community. Then I began to deepen my knowledge of Git and GitHub for the first time. The more I explored GitHub, the more I loved it. There're all kinds of projects which you can't wait to try out. GitHub is really great. Not only does it provide super awesome hosting service, but it also gets so many cool people together, just like its slogan: =="Build software better, together."==.
+
+Although people [made mistakes](https://github.com/blog/1826-follow-up-to-the-investigation-results), GitHub is still my first choice for software projects hosting service. I got two GitHub T-shirts from the holy C2C website [Taobao](http://taobao.com/) in China three weeks ago. And I continued my GitHub plan just now. I think time is more valuable than money. I'm not sure if I could setup a GitHub-like hosting system in a short time. And I believe I can't find a place better than GitHub currently. You know, I can tell you lots of reasons, but, the most important, I love it.

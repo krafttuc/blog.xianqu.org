@@ -1,26 +1,26 @@
 # Site settings
-title: "Soda"                         # The title of the site.
-subtitle: "Yet another Jekyll site"   # The subtile of the site.
-description: "A bloggin website"      # A short description of the site.
-url: "http://yourdomain.com"
+title: "Yiming Tang"                  # The title of the site.
+subtitle:                             # The subtile of the site.
+description: "Personal blog of Yiming Tang"      # A short description of the site.
+url: "http://blog.xianqu.org"
 baseurl: ""                           # Serve the website from the given base URL.
                                       # NOTE: you should also change assets base url if you modified this variable
 logo:                                 # The logo image for the site. Put it under assets/images/ directory.
                                       # The value should be its file name, e.g. "logo.png"
 cover_image:                          # The cover image path for the site.
-twitter:                              # The twitter ID for the site, if you have.
-google_analytics:                     # Your Google Analytics ID. e.g. "UA-XXXXX-X".
-disqus_shortname:                     # Your Disqus short name, if you want to use Disqus as comment system.
+twitter: "yiming_t"                   # The twitter ID for the site, if you have.
+google_analytics: "UA-26438443-1"     # Your Google Analytics ID. e.g. "UA-XXXXX-X".
+disqus_shortname: "xianqu"            # Your Disqus short name, if you want to use Disqus as comment system.
 
 # Author details. Single author currently.
 author:
-  name: "Your Name"
-  email: "user@example.com"
+  name: "Yiming Tang"
+  email: "yimingnju@gmail.com"
   avatar:                             # If you want to use a local avatar image, put it under `assets/images/`. Otherwise, Soda uses the image from Gravatar.
-  twitter:
-  github:
-  bio: "A short description of the author"
-  url: "http://yourdomain.com"
+  twitter: "yiming_t"
+  github: "yimingtang"
+  bio: "I'm currently a master student studying Software Engineering at Nanjing University. I made <a href=\"https://itunes.apple.com/us/app/lightmail/id599288123?ls=1&mt=8\">LightMail</a> when I was an intern at a startup company. I love thinking, programming and running."
+  url: "http://blog.xianqu.org"
 
 # Build settings
 exclude:

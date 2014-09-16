@@ -1,0 +1,18 @@
+---
+layout: post
+title: "A New Host"
+date: 2014-06-08 13:33:36 +0800
+comments: true
+categories:
+---
+
+If you ping [blog.xianqu.org](http://blog.xianqu.org), you may find that I've already move it to a new host which you are visiting now. Why?
+
+* It's wonderful to have my own VPS. I'd like to try some SA work.
+* I decided to deploy a sample app on a VPS after I had gone through the amazing [Rails Tutorial](http://www.railstutorial.org/book) book.
+
+Anyway, I must say thank you to my friend [@clippit](https://twitter.com/clippit) who has provided me with a virtual host during the last two years.
+
+It's not easy for me, a beginner, to setup a Linux server for the first time. I googled a lot and spent a whole night dealing with various problems. Fortunately, all things go well now. I created a simple [gist](https://gist.github.com/yimingtang/d339a70078d9ab1ff42c) for those who are curious about these.
+
+By the way, the new site is running on DigitalOcean. Here's a [referral code link](https://www.digitalocean.com/?refcode=01655cb63868) if you are interested in the VPS service.

@@ -1,0 +1,18 @@
+---
+layout: post
+title: "Soda"
+description:
+date: 2014-06-28 20:24:31 +0800
+comments: true
+categories:
+cover_image:
+tags:
+---
+
+My blog has played with Octopress for about two years, during which I never changed the default blogging theme. Therefore, I decided to make some difference. A few months ago, I found a minimal white theme called whitespace. However, the project itself is not so good as its appearance. So, I made some tweaks and sent a pull request to the repository as usual. Unfortunately, it wasn't merged.
+
+"Why don't you write your own? ==You are a programmer!==", I said to myself. A week later, I made [Soda](https://github.com/yimingtang/soda).
+
+Soda is a blogging framework based on [Jekyll](http://jekyllrb.com/), a static website generator. All I did in Soda is to meet my personal needs. This blog is somewhat a live demo of the project. If you're interested in it, give the repository a visit.
+
+Feel free to open an issue if you have any problems. Pull requests are welcome. Enjoy!
