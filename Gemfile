@@ -1,25 +1,19 @@
 source 'https://rubygems.org'
 
-# The latest Ruby
-ruby '2.1.2'
+# Latest Ruby
+ruby '2.2.0'
 
-# Rake
+# Utilities
 gem 'rake'
 
-# Jelyll
+# Jekyll
 gem 'jekyll'
-
-# Sitemap generator
 gem 'jekyll-sitemap'
 
 # Assets
 gem 'jekyll-assets'
-gem 'sass'
 gem 'uglifier'
 gem 'compass'
 
 # Truncating HTML
 gem 'truncato'
-
-# Markdown
-gem 'redcarpet'
