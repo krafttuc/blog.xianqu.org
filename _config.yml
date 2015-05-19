@@ -1,5 +1,5 @@
 # Site settings
-title: "Yiming Tang"                  # The title of the site.
+title: "闲趣"                          # The title of the site.
 subtitle:                             # The subtile of the site.
 description: "Personal blog of Yiming Tang"      # A short description of the site.
 url: "http://blog.xianqu.org"
@@ -19,7 +19,7 @@ author:
   avatar:                             # If you want to use a local avatar image, put it under `assets/images/`. Otherwise, Soda uses the image from Gravatar.
   twitter: "yiming_t"
   github: "yimingtang"
-  bio: "I'm currently a master student studying Software Engineering at Nanjing University. I made <a href=\"https://itunes.apple.com/us/app/lightmail/id599288123?ls=1&mt=8\">LightMail</a> when I was an intern at a startup company. I love thinking, programming and running."
+  bio: "I'm currently a master student studying Software Engineering at Nanjing University. I made <a href=\"https://itunes.apple.com/us/app/lightmail/id599288123?ls=1&mt=8\">LightMail</a> when I was an intern at a startup company. I love thinking, programming and running. Checkout either an <a href=\"http://localhost:4000/resume/resume-yiming-tang-en.pdf\">English version</a> or a <a href=\"http://localhost:4000/resume/resume-yiming-tang-zh_CN.pdf\">Chinese version</a> of my resume."
   url: "http://blog.xianqu.org"
 
 # Build settings
