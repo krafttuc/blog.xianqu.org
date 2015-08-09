@@ -206,7 +206,7 @@ NSLocalizedStringFromTableInBundle((key), @"MyLibrary", [NSBundle my_myLibraryBu
 
 ## 5. 结语
 
-踩我已经坑了，谁再猜谁二逼。倘若你也在开发过程中踩过奇奇怪怪的坑，欢迎告诉我。至少……能让这世界少点二逼吧……你说呢？
+坑我已经踩过了，谁再踩谁二逼。倘若你也在开发过程中踩过奇奇怪怪的坑，欢迎告诉我。至少……能让这世界少点二逼吧……你说呢？
 
 
 [^nsbundle]: [NSBundle+MyLibrary](https://gist.github.com/yimingtang/08e2e48969e42935b42c)
