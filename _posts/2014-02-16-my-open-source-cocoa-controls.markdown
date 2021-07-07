@@ -1,8 +1,7 @@
 ---
 layout: post
-title: "My Open Source Cocoa Controls"
+title: 'My Open Source Cocoa Controls'
 date: 2014-02-16 20:10:52 +0800
-comments: true
 categories: 小小技术
 ---
 

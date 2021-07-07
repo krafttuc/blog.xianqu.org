@@ -1,11 +1,8 @@
 ---
 layout: post
-title: "Soda"
-description:
+title: 'Soda'
 date: 2014-06-28 20:24:31 +0800
-comments: true
 categories:
-cover_image:
 tags:
 ---
 

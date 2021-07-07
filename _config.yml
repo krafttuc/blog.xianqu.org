@@ -1,99 +1,75 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+#
+# If you need help with YAML syntax, here are some quick references for you:
+# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
+# https://learnxinyminutes.com/docs/yaml/
+#
 # Site settings
-title: "闲趣"                          # The title of the site.
-subtitle:                             # The subtile of the site.
-description: "Personal blog of Yiming Tang"      # A short description of the site.
-url: "http://blog.xianqu.org"
-baseurl: ""                           # Serve the website from the given base URL.
-                                      # NOTE: you should also change assets base url if you modified this variable
-logo:                                 # The logo image for the site. Put it under assets/images/ directory.
-                                      # The value should be its file name, e.g. "logo.png"
-cover_image:                          # The cover image path for the site.
-twitter: "yiming_t"                   # The twitter ID for the site, if you have.
-google_analytics: "UA-26438443-1"     # Your Google Analytics ID. e.g. "UA-XXXXX-X".
-disqus_shortname: "xianqu"            # Your Disqus short name, if you want to use Disqus as comment system.
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
 
-# Author details. Single author currently.
-author:
-  name: "Yiming Tang"
-  email: "yimingnju@gmail.com"
-  avatar:                             # If you want to use a local avatar image, put it under `assets/images/`. Otherwise, Soda uses the image from Gravatar.
-  twitter: "yiming_t"
-  github: "yimingtang"
-  bio: "I'm currently an iOS engineer at <a href=\"http://baixing.com\">baixing.com</a>. I made <a href=\"https://itunes.apple.com/us/app/lightmail/id599288123?ls=1&mt=8\">LightMail</a> when I was an intern at a startup company. I love thinking, programming and running. Checkout either an <a href=\"http://blog.xianqu.org/resume/resume-yiming-tang-en.pdf\">English version</a> or a <a href=\"http://blog.xianqu.org/resume/resume-yiming-tang-zh_CN.pdf\">Chinese version</a> of my resume."
-  url: "http://blog.xianqu.org"
+title: 闲趣
+description: 毅明的个人博客。
+baseurl: '' # the subpath of your site, e.g. /blog
+url: 'https://blog.xianqu.org' # the base hostname & protocol for your site, e.g. http://example.com
+
+permalink: /:year/:month/:title
 
 # Build settings
-exclude:
-  - README.md
-  - Gemfile
-  - Gemfile.lock
-  - LICENSE
-  - Rakefile
-  - rsync-exclude
-  - _config_example.yml
-
-permalink: /:year/:month/:title     # Permalink format
-paginate: 5                         # Number of posts per page
-
-# Tags and categories
-category_dir: "category"            # The URL may look like this: http://yourdomain/category/this-a-category/
-tag_dir: "tag"
-
-# Put plugins here
-gems:
+plugins:
+  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-remote-theme
+  - jekyll-seo-tag
   - jekyll-sitemap
 
-# Markdown
-markdown: redcarpet
+# Exclude from processing.
+# The following items will not be processed, by default.
+# Any item listed under the `exclude:` key here will be automatically added to
+# the internal "default list".
+#
+# Excluded items can be processed by explicitly listing the directories or
+# their entries' file path in the `include:` list.
+#
+exclude:
+  - LICENSE
+  - README.md
+  # - .sass-cache/
+  # - .jekyll-cache/
+  # - gemfiles/
+  # - Gemfile
+  # - Gemfile.lock
+  # - node_modules/
+  # - vendor/bundle/
+  # - vendor/cache/
+  # - vendor/gems/
+  # - vendor/ruby/
 
-# https://github.com/vmg/redcarpet
-redcarpet:
-  extensions:
-    - autolink
-    - disable_indented_code_blocks
-    - fenced_code_blocks
-    - footnotes
-    - highlight
-    - no_intra_emphasis
-    - smart
-    - strikethrough
-    - superscript
-    - tables
-    - with_toc_data
+# jekyll-remote-theme
+remote_theme: jekyll/minima@master
 
-# Syntax highlighter
-highlighter: pygments
+# jekyll-paginate
+paginate: 10
 
-# Excerpt
-excerpt_separator: "\n\n"
+# minima theme
+author:
+  name: 毅明
+  email: yimingnju@gmail.com
 
-# Jekyll-Assets
-# https://github.com/ixti/jekyll-assets
-assets:
-  sources:
-    - _assets/fonts
-    - _assets/images
-    - _assets/javascripts
-    - _assets/stylesheets
-  baseurl: /assets/                   # Be careful if the site baseurl is set.
-  css_compressor: sass
-  js_compressor: uglifier
-  cache: true
+show_excerpts: false
 
-# Gravatar
-# For more details, refer to https://en.gravatar.com/site/implement/images/
-gravatar:
-  default_image: mm
-  size: 100
-  rating: g
-  secure: true
-
-# If true, we'll ignore any excerpt_separators and generate excerpt automatically. See `auto_excerpt` below.
-auto_excerpt_enabled: true
-
-# Auto excerpt configuration
-# https://github.com/jorgemanrubia/truncato
-auto_excerpt:
-  max_length: 256
-  exclude_tags: ["pre", "img", "table", "hr", "iframe", "object", "audio", "video", "embed", "h1", "h2", "h3", "h4", "h5", "h6", ".gist"]
-  count_tags: false
+minima:
+  skin: solarized
+  social_links:
+    github: yimingtang
+    twitter: yiming_t
