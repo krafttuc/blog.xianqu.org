@@ -13,11 +13,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Cache Gems
+        uses: actions/cache@v2
         with:
-          ruby-version: 2.7.2
-          bundler-cache: true
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
 
       - uses: helaili/jekyll-action@v2
         with:
