@@ -69,6 +69,8 @@ author:
 
 show_excerpts: false
 
+google_analytics: UA-26438443-1
+
 minima:
   skin: solarized
   social_links:
