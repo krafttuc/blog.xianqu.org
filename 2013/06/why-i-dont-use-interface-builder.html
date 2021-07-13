@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>我为什么不用Interface Builder | 闲趣</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="我为什么不用Interface Builder" />
+<meta name="author" content="毅明" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="在互联网上关于 Interface Builder 的争吵每天都在发生，用和不用大家都有一大堆的理由。最近看了这篇文章，很多地方和作者有共鸣，结合自己的一些经历，就有了你现在所看到的东西，你可以把它当成前者的中文版。" />
+<meta property="og:description" content="在互联网上关于 Interface Builder 的争吵每天都在发生，用和不用大家都有一大堆的理由。最近看了这篇文章，很多地方和作者有共鸣，结合自己的一些经历，就有了你现在所看到的东西，你可以把它当成前者的中文版。" />
+<link rel="canonical" href="https://blog.xianqu.org/2013/06/why-i-dont-use-interface-builder" />
+<meta property="og:url" content="https://blog.xianqu.org/2013/06/why-i-dont-use-interface-builder" />
+<meta property="og:site_name" content="闲趣" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-06-28T09:53:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="我为什么不用Interface Builder" />
+<script type="application/ld+json">
+{"description":"在互联网上关于 Interface Builder 的争吵每天都在发生，用和不用大家都有一大堆的理由。最近看了这篇文章，很多地方和作者有共鸣，结合自己的一些经历，就有了你现在所看到的东西，你可以把它当成前者的中文版。","url":"https://blog.xianqu.org/2013/06/why-i-dont-use-interface-builder","@type":"BlogPosting","headline":"我为什么不用Interface Builder","dateModified":"2013-06-28T09:53:00+00:00","datePublished":"2013-06-28T09:53:00+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.xianqu.org/2013/06/why-i-dont-use-interface-builder"},"author":{"@type":"Person","name":"毅明"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://blog.xianqu.org/feed.xml" title="闲趣" /><script async src="https://www.googletagmanager.com/gtag/js?id=UA-26438443-1"></script>
+<script>
+  window['ga-disable-UA-26438443-1'] = window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1";
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26438443-1');
+</script>
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">闲趣</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">关于</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">我为什么不用Interface Builder</h1>
+    <p class="post-meta"><time class="dt-published" datetime="2013-06-28T09:53:00+00:00" itemprop="datePublished">
+        Jun 28, 2013
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>在互联网上关于 Interface Builder 的争吵每天都在发生，用和不用大家都有一大堆的理由。最近看了<a href="http://sam.roon.io/why-i-dont-use-interface-builder">这篇文章</a>，很多地方和作者有共鸣，结合自己的一些经历，就有了你现在所看到的东西，你可以把它当成前者的中文版。</p>
+
+<p>一年前我开始做 iOS 开发，看的是<a href="http://www.stanford.edu/class/cs193p/cgi-bin/drupal/">Stanford 的 CS 193P</a>。老头子推荐新手用 Storyboard 来做开发，因为它是可视化的，不太需要了解代码层的东西就能拖出界面，各种配置项可以通过勾选搞定，省去很多代码，相当傻瓜，此外 Storyboard 也让人对应用程序的活动流程一目了然。我对这种拖拽式的编程方式很不习惯：这不是代码出奇迹的节奏啊！</p>
+
+<p>我开始做实际的项目。看了几个开源项目的代码后，我知道旧时代有个<code class="language-plaintext highlighter-rouge">xib</code>格式的文件。这货是 Interface Builder 的产物，现在我们称他们为 NIB。用法和 Storyboard 差不多，可视化拖拽、配置。Storyboard 比较新，业界用的人不多，于是我很纠结，到底是听老头子的话用新东西，还是随大流试试单独的 NIB？初生牛犊不怕虎，反正没怎么做过 iOS 开发，就按课上说的来吧，我们团队用 Storyboard 拖 UI。一个月后，我提议弃用 Interface Builder，不用任何 NIB（包括 Storyboard）。直到现在只要是在我控制范围内，我都没再碰过任何 NIB，我更愿意用代码来生成。</p>
+
+<p>不用 Interface Builder 的理由很多，对我来说主要有一下几点：</p>
+
+<h2 id="1-多人协作">1. 多人协作</h2>
+
+<p>从项目管理的角度来讲 NIB 就不应该被使用。你能保证自己从来不会在合并 NIB 时出现冲突吗？在一个稍有规模，多开发者的项目里，合并 NIB 简直就是梦魇。特别是多人共用一个 Storyboard 时，开发者将花费很多时间和精力去解决冲突，而不是去做比这更有意义的事。</p>
+
+<p>当然，如果最终合并结果正确可信，那么很多同学还是可以忍受的。然而，合并毕竟是会出问题的，尤其是用 Git 自动合并。这些问题直到运行时才会出现！倘使测试力度不够，这就是潜在的隐患。此外，我们知道 NIB 是人不可读的，也就是说，对它做版本控制几乎没有意义。你没法从 diff 看出来半点名堂。倘使你使用的不是 NIB，而是一行一行的 Objective-C 代码，那么结果会好很多。</p>
+
+<h2 id="2-选择显式而非隐式">2 选择显式而非隐式</h2>
+
+<p>我喜欢用代码来完成各种东西，这样你打开一个 view 或者一个 view controller，就能看到所有东西。否则，看你代码的这位同学还得去找相应的 NIB。</p>
+
+<p>NIB 同样也是滋生 bug 的温床，很多时候你调试了半天才发现，某个 bug 并不是出在自己的代码里，而是在 Interface Builder 的某个小角落里自己忘记给某个选项打上 √。如果所有的组件都由代码生成，那么在调试时就简单得多，你只要专注于和 View 有关的代码就快好了。选择显式地在代码里写 view，可以让你对 view 有强大的控制力。从初始化到布局、绘制你都能插手，在代码里你清楚地知道某个 view 的各个属性会是多少，而非交由 Interface Builder 来管理，这样虽然看上去代码行数多了，但它帮你减少了 bug 数量，节省了 debug 时间。</p>
+
+<h2 id="3-耦合">3 耦合</h2>
+
+<p>用 Interface Builder 去创建可复用的 view 会是一件很蛋疼的事。首先你需要拖拽出各种各样的组件，然后给每个组件设置属性，接着你要把 outlet 连接到要用到的代码块……某一次，你忘记连 outlet，然后你的程序就在 runtime crash 了。看，你又弄出了一堆 bug。对于各种零碎的 view 我更喜欢为他们写类，然后在里面实现各种我想要的东西，在需要用到这些 view 的时候生成对象就是了。如果我有什么错误，编译器大哥还能帮我检查。</p>
+
+<p>使用 NIB 让我提心吊胆，它让程序变得不那么紧凑。很多需要内聚的东西，被分了出去。从实际的开发体验来讲就是东一块，西一块，切来切去我都觉得烦。一旦当你定制的 view 越来越多，NIB 就增多，然后呵呵。</p>
+
+<h2 id="4-布局">4 布局</h2>
+
+<p>我承认自己几乎没在 Interface Builder 用过各种 layout（包括 auto-layout）。我不清楚用 NIB 做 layout 是否困难。但我知道重写<code class="language-plaintext highlighter-rouge">UIView</code>的<code class="language-plaintext highlighter-rouge">layoutSubviews</code>让布局变得很简单。所有子元素的布局只要在这里设置就行了。需要重新布局时，调一下<code class="language-plaintext highlighter-rouge">setNeedsLayout</code>就行。不用关心什么 Interface Builder 里各种 layout 概念，不用把布局代码分地方写（降低耦合）。只要稍加判断，让同一个 view 适应 iPhone 和 iPad 不是什么难事。给 iPad 和 iPhone 分别提供 NIB 这种事简直不能忍。</p>
+
+<h2 id="5-本地化">5 本地化</h2>
+
+<p>当 IB 遇到本地化会发生什么呢？我屮艸芔茻！只要涉及本地化的 NIB，都要你去投时间和体力做啊。点鼠标啊，设置啊，纯体力活！如果用代码，字符串用<code class="language-plaintext highlighter-rouge">NSLocalizedString(@"Localizable String", @"Comment")</code>，然后在资源文件里翻译一下，轻轻松松。</p>
+
+<h2 id="6-小结">6 小结</h2>
+
+<p>Interface Builder 的初衷可能是希望帮助开发者节省写界面的时间和精力。可视化，表现层和数据分离都是很好的思想。但它在目前还不让人满意。它让多人协作变得困难，诱导拙劣的实践，降低可复用性，让你开发变慢……</p>
+
+<p>我如果能不用 IB，就不用，作为一名程序员更应该用代码说话。从装逼角度来讲，这样才显得高端大气上档次不是吗？</p>
+
+  </div><a class="u-url" href="/2013/06/why-i-dont-use-interface-builder" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+        <ul class="contact-list">
+          <li class="p-name">毅明</li>
+          <li><a class="u-email" href="mailto:yimingnju@gmail.com">yimingnju@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>毅明的个人博客。</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/yimingtang" title="yimingtang"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/yiming_t" title="yiming_t"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

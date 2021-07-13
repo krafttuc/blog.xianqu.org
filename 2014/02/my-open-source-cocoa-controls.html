@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>My Open Source Cocoa Controls | 闲趣</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="My Open Source Cocoa Controls" />
+<meta name="author" content="毅明" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I have been writing Objective-C for about 18 months. When I started working on an iOS application in July 2012, I knew little about Objective-C and Cocoa. There’re tones of articles and books teaching you how to write Objective-C, but, to me, the most useful resources are real open source projects." />
+<meta property="og:description" content="I have been writing Objective-C for about 18 months. When I started working on an iOS application in July 2012, I knew little about Objective-C and Cocoa. There’re tones of articles and books teaching you how to write Objective-C, but, to me, the most useful resources are real open source projects." />
+<link rel="canonical" href="https://blog.xianqu.org/2014/02/my-open-source-cocoa-controls" />
+<meta property="og:url" content="https://blog.xianqu.org/2014/02/my-open-source-cocoa-controls" />
+<meta property="og:site_name" content="闲趣" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-02-16T12:10:52+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="My Open Source Cocoa Controls" />
+<script type="application/ld+json">
+{"description":"I have been writing Objective-C for about 18 months. When I started working on an iOS application in July 2012, I knew little about Objective-C and Cocoa. There’re tones of articles and books teaching you how to write Objective-C, but, to me, the most useful resources are real open source projects.","url":"https://blog.xianqu.org/2014/02/my-open-source-cocoa-controls","@type":"BlogPosting","headline":"My Open Source Cocoa Controls","dateModified":"2014-02-16T12:10:52+00:00","datePublished":"2014-02-16T12:10:52+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.xianqu.org/2014/02/my-open-source-cocoa-controls"},"author":{"@type":"Person","name":"毅明"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://blog.xianqu.org/feed.xml" title="闲趣" /><script async src="https://www.googletagmanager.com/gtag/js?id=UA-26438443-1"></script>
+<script>
+  window['ga-disable-UA-26438443-1'] = window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1";
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26438443-1');
+</script>
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">闲趣</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">关于</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">My Open Source Cocoa Controls</h1>
+    <p class="post-meta"><time class="dt-published" datetime="2014-02-16T12:10:52+00:00" itemprop="datePublished">
+        Feb 16, 2014
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>I have been writing Objective-C for about 18 months. When I started working on an iOS application in July 2012, I knew little about Objective-C and Cocoa. There’re tones of articles and books teaching you how to write Objective-C, but, to me, the most useful resources are real open source projects.</p>
+
+<p>I learned a lot by reading the source code. Beside basic programming languages, lots of best practices are shown in a well-written open source project. Thanks to the version control systems, sometimes I’m even able to see the whole development process. I learned how to make design decisions according to the context. I realized it’s more important to get things done than just keeping a perfect idea in my mind. That is to say, to achieve the goals, workarounds and tricks are acceptable and should be taken into consideration. What’s more, while reading source code, I was guessing the aims of every piece of code. That’s just like you are typing together with the author.</p>
+
+<p>Open source also plays a significant role in modern software development. Note I’m not going to talk this broadly. It may result in tones of topics. I just want to tell you that I can’t build my app without the help of so many third-party open source components. I can’t even imagine it.</p>
+
+<p>Anyway, I benefit a lot from open source. Open source is wonderful. So, here comes the main point of this post. To give back to the community, I released two cocoa controls days ago. They are <a href="https://github.com/krafttuc/TYMProgressBarView">TYMProgressBarView</a> and <a href="https://github.com/krafttuc/TYMActivityIndicatorView">TYMActivityIndicatorView</a>.</p>
+
+<p>TYMProgressBarView is a simple progress bar. It provides many appearance options for customizing. You will be happy to play with it and create your own progress bar.</p>
+
+<p>TYMActivityIndicatorView is an activity indicator view with extra features. Most of the behaviors are much like those of <code class="language-plaintext highlighter-rouge">UIActivityIndicatorView</code>. The killer feature is that it allows you rotating images. That means you can easily implement all kinds of custom activity indicators by replacing images.</p>
+
+<p>Both of them are super simple and easy to use. I bet you’ll like them.</p>
+
+  </div><a class="u-url" href="/2014/02/my-open-source-cocoa-controls" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+        <ul class="contact-list">
+          <li class="p-name">毅明</li>
+          <li><a class="u-email" href="mailto:yimingnju@gmail.com">yimingnju@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>毅明的个人博客。</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/yimingtang" title="yimingtang"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/yiming_t" title="yiming_t"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Android开发笔记——ListView的零零碎碎 | 闲趣</title>
+<meta name="generator" content="Jekyll v4.2.0" />
+<meta property="og:title" content="Android开发笔记——ListView的零零碎碎" />
+<meta name="author" content="毅明" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="在数据流型的移动应用中，列表在数据展示上作用很大。随便拿个微博或 SNS 应用，你就能发现自己接触的多是列表。列表承担的责任包括数据展示，对特定对象的快捷操作等。我在写 Android 作业是也收集了一些零零碎碎的东西，在此一并分享出来吧。" />
+<meta property="og:description" content="在数据流型的移动应用中，列表在数据展示上作用很大。随便拿个微博或 SNS 应用，你就能发现自己接触的多是列表。列表承担的责任包括数据展示，对特定对象的快捷操作等。我在写 Android 作业是也收集了一些零零碎碎的东西，在此一并分享出来吧。" />
+<link rel="canonical" href="https://blog.xianqu.org/2012/04/something-about-android-list-view" />
+<meta property="og:url" content="https://blog.xianqu.org/2012/04/something-about-android-list-view" />
+<meta property="og:site_name" content="闲趣" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-04-15T08:32:45+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Android开发笔记——ListView的零零碎碎" />
+<script type="application/ld+json">
+{"description":"在数据流型的移动应用中，列表在数据展示上作用很大。随便拿个微博或 SNS 应用，你就能发现自己接触的多是列表。列表承担的责任包括数据展示，对特定对象的快捷操作等。我在写 Android 作业是也收集了一些零零碎碎的东西，在此一并分享出来吧。","url":"https://blog.xianqu.org/2012/04/something-about-android-list-view","@type":"BlogPosting","headline":"Android开发笔记——ListView的零零碎碎","dateModified":"2012-04-15T08:32:45+00:00","datePublished":"2012-04-15T08:32:45+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.xianqu.org/2012/04/something-about-android-list-view"},"author":{"@type":"Person","name":"毅明"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://blog.xianqu.org/feed.xml" title="闲趣" /><script async src="https://www.googletagmanager.com/gtag/js?id=UA-26438443-1"></script>
+<script>
+  window['ga-disable-UA-26438443-1'] = window.doNotTrack === "1" || navigator.doNotTrack === "1" || navigator.doNotTrack === "yes" || navigator.msDoNotTrack === "1";
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-26438443-1');
+</script>
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">闲趣</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">关于</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Android开发笔记——ListView的零零碎碎</h1>
+    <p class="post-meta"><time class="dt-published" datetime="2012-04-15T08:32:45+00:00" itemprop="datePublished">
+        Apr 15, 2012
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>在数据流型的移动应用中，列表在数据展示上作用很大。随便拿个微博或 SNS 应用，你就能发现自己接触的多是列表。列表承担的责任包括数据展示，对特定对象的快捷操作等。我在写 Android 作业是也收集了一些零零碎碎的东西，在此一并分享出来吧。</p>
+
+<h2 id="1-下拉刷新">1 下拉刷新</h2>
+
+<p>下拉刷新目前已经是数据流 APP 的标配了。Android 没有原生的下拉刷新控件支持，但只要你想没有不可能。某老外放出了一个下拉刷新的实现代码。请<a href="https://github.com/johannilsson/android-pulltorefresh">猛击这里</a>。还有人为他写了一个简单的<a href="http://sharedstate.net/archives/pull-to-refresh">指南</a>。</p>
+
+<h2 id="2-quick-action">2 Quick Action</h2>
+
+<p>Quick Action 或许可以称为快捷动作，意思是点击 list 的 item 后出现一个动作栏，提供快捷的操作。唔……其实和 context menu 差不多啦，不过么……这个看上去绚一点。</p>
+
+<p><a href="http://www.londatiga.net/it/how-to-create-quickaction-dialog-in-android/">教程在这里</a>。</p>
+
+<h2 id="3-android-控件大杂烩">3 Android 控件大杂烩</h2>
+
+<p>一直很希望能找到一个介绍各种 Android UI pattern 的网站，现在<a href="http://www.androiduipatterns.com/p/android-ui-pattern-collection.html">这里</a>有一个。要是再完整一点，整理好一点那就更完美了。</p>
+
+<p>吾记得国人做过一个 iOS 的，有兴趣的同学去查查。</p>
+
+<h2 id="4-带圆角的-listview">4 带圆角的 ListView</h2>
+
+<p>圆角流行很久了，给 ListView 加上圆角会很酷。例如下面这个样子。</p>
+
+<p><img src="/images/2012-04-android-rounded-corner-list-1.jpg" alt="" /></p>
+
+<p>实现方法有好几种：</p>
+
+<h3 id="41-给-listview-整体设置一个带圆角的-background">4.1 给 ListView 整体设置一个带圆角的 background</h3>
+
+<p>在 XML 文件里你或许会这么做</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>android:background = "@drawable/bg_list"
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">bg_list</code>便是你定义的可以自适应大小的圆角图。具体做法你可以参看我的<a href="http://blog.xianqu.org/2012/04/android-borders-and-radius-corners/">Android 开发笔记——圆角和边框们</a>。</p>
+
+<p>这是我们最容易想到的一种解决方案。在很多时候它能起到作用。</p>
+
+<p>但是要应对上面的那种样子好像不太容易哦，怎么让 scroll 跑外面去？listview 是占整个屏幕的宽度还是要做一个 margin？</p>
+
+<p>唔，想来想去，好像只能这么干。</p>
+
+<p><img src="/images/2012-04-android-rounded-corner-list-2.jpg" alt="" /></p>
+
+<p>等你实际运行一下你就发现——坑爹了。这个 listview 的 background 就和一个相框一样，而不是我们想要的那种：让整个 list 看上去像带圆角的卡片。此外，你的 scroll 也不是在屏幕的边缘，而是随 listview 过去了。当然，你可以在 listview 外面加一个 ScrollLayout，但请相信我，那样还是起不了什么大作用。</p>
+
+<p>所以，这个解决方案适合什么情况呢？ 当你需要做<strong>一个内部能滑动的带圆角的框体</strong>。</p>
+
+<h3 id="42-给-listview-设置-padding给每一个条目分别设置-background">4.2 给 ListView 设置 padding，给每一个条目分别设置 background</h3>
+
+<p>我曾逆向工程 Twitter for Android 想看看它们是怎么实现这样的卡片 ListView 的。我拿到了 XML 文件，我发现他们用了一个自定义的”CardView”，尼玛这得看 Java 源码。但反编译出来的结果甚是坑爹，我只能放弃。</p>
+
+<p>后来我自己研究了一下，找了个替代方案。</p>
+
+<p>基本思想是在 ListView 的 Adapter 的 getView()函数里，根据 position 动态设置每个 item 的 background。如，如果是第一个 item，就给他一个顶部是圆角的背景。如果是当中的 item，则给一个不带圆角的背景。如果是底部的 item，就给一个底部带圆角的背景。</p>
+
+<p>实现代码片段如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyAdapter</span> <span class="kd">extends</span> <span class="nc">ArrayAdapter</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="c1">// other methods...</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">View</span> <span class="nf">getView</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="nc">View</span> <span class="n">convertView</span><span class="o">,</span> <span class="nc">ViewGroup</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">ViewHolder</span> <span class="n">holder</span><span class="o">;</span>
+        <span class="nc">View</span> <span class="n">view</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">convertView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">view</span> <span class="o">=</span> <span class="n">convertView</span><span class="o">;</span>
+            <span class="n">holder</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ViewHolder</span><span class="o">)</span> <span class="n">view</span><span class="o">.</span><span class="na">getTag</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">view</span> <span class="o">=</span> <span class="n">inflater</span><span class="o">.</span><span class="na">inflate</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">list_item_view</span><span class="o">,</span> <span class="n">parent</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+            <span class="n">holder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ViewHolder</span><span class="o">();</span>
+            <span class="n">holder</span><span class="o">.</span><span class="na">source</span> <span class="o">=</span> <span class="o">(</span><span class="nc">TextView</span><span class="o">)</span> <span class="n">view</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">text</span><span class="o">);</span>
+            <span class="n">view</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="n">holder</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 加载要显示的数据</span>
+        <span class="n">holder</span><span class="o">.</span><span class="na">text</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">getItem</span><span class="o">(</span><span class="n">position</span><span class="o">));</span>
+
+        <span class="c1">// 动态设置item的background</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">position</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">holder</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">setBackgroundResource</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">drawable</span><span class="o">.</span><span class="na">bg_list_row_top_selector</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">position</span> <span class="o">==</span> <span class="n">getCount</span><span class="o">()</span> <span class="o">-</span><span class="mi">1</span><span class="o">){</span>
+            <span class="n">holder</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">setBackgroundResource</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">drawable</span><span class="o">.</span><span class="na">bg_list_row_bottom_selector</span><span class="o">);</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="n">holder</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">setBackgroundResource</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">drawable</span><span class="o">.</span><span class="na">bg_list_row_middle_selector</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">view</span><span class="o">;</span>
+
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ViewHolder</span> <span class="o">{</span>
+        <span class="nc">RelativeLayout</span> <span class="n">layout</span><span class="o">;</span>
+        <span class="nc">TextView</span> <span class="n">text</span><span class="o">;</span>          <span class="c1">//比如我们的item里只有一个TextView</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>每个 item 背景的 selector，如顶部 item 的背景</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span>
+<span class="nt">&lt;selector</span> <span class="na">xmlns:android=</span><span class="s">"http://schemas.android.com/apk/res/android"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;item</span> <span class="na">android:drawable=</span><span class="s">"@drawable/bg_list_row_top_pressed"</span> <span class="na">android:state_pressed=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;item</span> <span class="na">android:drawable=</span><span class="s">"@drawable/bg_list_row_top_focused"</span> <span class="na">android:state_focused=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;item</span> <span class="na">android:drawable=</span><span class="s">"@drawable/bg_list_row_top_focused"</span> <span class="na">android:state_selected=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;item</span> <span class="na">android:drawable=</span><span class="s">"@drawable/bg_list_row_top"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/selector&gt;</span>
+</code></pre></div></div>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span>
+<span class="nt">&lt;layer-list</span> <span class="na">xmlns:android=</span><span class="s">"http://schemas.android.com/apk/res/android"</span> <span class="nt">&gt;</span>
+
+    <span class="nt">&lt;item&gt;</span>
+        <span class="nt">&lt;shape</span> <span class="na">android:shape=</span><span class="s">"rectangle"</span> <span class="nt">&gt;</span>
+            <span class="nt">&lt;stroke</span>
+                <span class="na">android:width=</span><span class="s">"1dp"</span>
+                <span class="na">android:color=</span><span class="s">"#cccccc"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;corners</span>
+                <span class="na">android:topLeftRadius=</span><span class="s">"10.0dip"</span>
+                <span class="na">android:topRightRadius=</span><span class="s">"10.0dip"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/shape&gt;</span>
+    <span class="nt">&lt;/item&gt;</span>
+
+    <span class="nt">&lt;item</span>
+        <span class="na">android:bottom=</span><span class="s">"2dp"</span>
+        <span class="na">android:left=</span><span class="s">"2dp"</span>
+        <span class="na">android:right=</span><span class="s">"2dp"</span>
+        <span class="na">android:top=</span><span class="s">"2dp"</span><span class="nt">&gt;</span>
+
+        <span class="nt">&lt;shape</span> <span class="na">android:shape=</span><span class="s">"rectangle"</span> <span class="nt">&gt;</span>
+            <span class="nt">&lt;solid</span> <span class="na">android:color=</span><span class="s">"#ffffff"</span> <span class="nt">/&gt;</span>
+
+            <span class="nt">&lt;corners</span>
+                <span class="na">android:topLeftRadius=</span><span class="s">"8.0dip"</span>
+                <span class="na">android:topRightRadius=</span><span class="s">"8.0dip"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/shape&gt;</span>
+    <span class="nt">&lt;/item&gt;</span>
+
+<span class="nt">&lt;/layer-list&gt;</span>
+</code></pre></div></div>
+
+<p>其他的几种状态如 focused, pressed 请自己脑补。</p>
+
+<p>你的 ListView 需要占满屏幕，并且可以做如下属性设置</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;ListView</span>
+    <span class="na">android:id=</span><span class="s">"@android:id/list"</span>
+    <span class="na">android:layout_width=</span><span class="s">"fill_parent"</span>
+    <span class="na">android:layout_height=</span><span class="s">"fill_parent"</span>
+    <span class="na">android:paddingLeft=</span><span class="s">"10.0dp"</span>
+    <span class="na">android:paddingRight=</span><span class="s">"10.0dp"</span>
+    <span class="na">android:scrollbarStyle=</span><span class="s">"outsideOverlay"</span>
+    <span class="na">android:background =</span><span class="s">"#ffe4e4e4"</span>
+    <span class="na">android:fadingEdge =</span><span class="s">"none"</span>
+    <span class="na">android:listSelector=</span><span class="s">"#00000000"</span>
+    <span class="na">android:drawSelectorOnTop=</span><span class="s">"false"</span>
+    <span class="na">android:cacheColorHint=</span><span class="s">"#ffe4e4e4"</span>
+    <span class="na">android:divider=</span><span class="s">"@null"</span>
+    <span class="na">android:dividerHeight=</span><span class="s">"0.0px"</span>
+<span class="nt">/&gt;</span>
+<span class="c">&lt;!-- 让scroll块至于list最外面 --&gt;</span>
+</code></pre></div></div>
+
+<h2 id="5-题外话">5 题外话</h2>
+
+<p>上个礼拜我的博客已经搬到新的 VPS 上了。访问起来应该比以前稳定咯。为了充分利用这个 VPS，我也会加大更新频率。</p>
+
+<p>另外，明天微软实习生面试，攒 RP。</p>
+
+  </div><a class="u-url" href="/2012/04/something-about-android-list-view" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+        <ul class="contact-list">
+          <li class="p-name">毅明</li>
+          <li><a class="u-email" href="mailto:yimingnju@gmail.com">yimingnju@gmail.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>毅明的个人博客。</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/yimingtang" title="yimingtang"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/yiming_t" title="yiming_t"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

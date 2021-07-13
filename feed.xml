@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog.xianqu.org/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.xianqu.org/" rel="alternate" type="text/html" /><updated>2021-07-13T08:48:47+00:00</updated><id>https://blog.xianqu.org/feed.xml</id><title type="html">闲趣</title><subtitle>毅明的个人博客。</subtitle><author><name>毅明</name><email>yimingnju@gmail.com</email></author><entry><title type="html">给 Pod 添加资源文件</title><link href="https://blog.xianqu.org/2015/08/pod-resources" rel="alternate" type="text/html" title="给 Pod 添加资源文件" /><published>2015-08-09T08:24:11+00:00</published><updated>2015-08-09T08:24:11+00:00</updated><id>https://blog.xianqu.org/2015/08/pod-resources</id><content type="html" xml:base="https://blog.xianqu.org/2015/08/pod-resources">&lt;p&gt;&lt;img src=&quot;/images/2015-08-cocoapods.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注：本文假定读者对 CocoaPods 的使用已经相当熟练，创建过 Pod 或有此打算。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://cocoapods.org&quot;&gt;CocoaPods&lt;/a&gt; 是当前 Swift 和 Objective-C 工程中较为流行的依赖管理工具。它拥有超过 10,000 个程序库，通过一份 Podfile 和几条基本命令就能帮助开发者优雅地管理工程依赖。&lt;/p&gt;
+
+&lt;p&gt;虽然人们绝大多数时候只是利用 CocoaPods 安装或更新特定版本的库，但是在应用开发过程中，难免会遇到需要自己创建 pod 的情况。CocoaPods 规定每个 pod 库都必须要有一份 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;podspec&lt;/code&gt; 文件。在这份文件里，你要填写作者信息、功能简介、版权信息等基本内容。具体语法可以参看&lt;a href=&quot;https://guides.cocoapods.org/syntax/podspec.html&quot;&gt;官方文档&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;podspec&lt;/code&gt; 中，利用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;source_files&lt;/code&gt; 你可以指定要编译的源代码文件。可是，当你需要把图片、音频、NIB 等资源打包进 Pod 时该怎么办呢？我“有幸”在做 pod 时踩过几个和资源文件有关的坑，在此和大家分享。&lt;/p&gt;
+
+&lt;h2 id=&quot;1-resources-or-resource_bundles&quot;&gt;1. resources or resource_bundles&lt;/h2&gt;
+
+&lt;p&gt;有经验的同学在我提出怎么在 pod 中打包资源这个问题时，肯定会告诉我 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resources&lt;/code&gt; 这个属性。示例用法如下：&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;resources&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Images/*.png&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Sounds/*&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我们在 Cocoa 社区见到的绝大多数库都在用它。利用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resources&lt;/code&gt; 属性可以指定 pod 要使用的资源文件。这些资源文件在 build 时会被直接拷贝到 client target 的 mainBundle 里。这样就实现了把图片、音频、NIB 等资源打包进最终应用程序的目的。&lt;/p&gt;
+
+&lt;p&gt;但是，这就带来了一个问题，那就是 client target 的资源和各种 pod 所带来的资源都在同一 bundle 的同一层目录下，很容易产生命名冲突。例如，我的 app 里有张按钮图片叫 “button.png”，而你的 pod 里也有张图片叫 “button.png”，拷贝资源时，我很担心 pod 里的文件会不会把我 app 里的同名文件给覆盖掉？即使没覆盖掉，程序运行时到底用哪张？很显然，我们不希望上述事情发生。&lt;/p&gt;
+
+&lt;p&gt;为了解决这一问题，CocoaPods 在 0.23.0 加入了一个新属性 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resource_bundles&lt;/code&gt;。示例用法如下：&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;resource_bundles&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;s1&quot;&gt;'MyLibrary'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Resources/*.png'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+  &lt;span class=&quot;s1&quot;&gt;'OtherResources'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'OtherResources/*.png'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可见， &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resources&lt;/code&gt; 和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resource_bundles&lt;/code&gt; 的差别是在于后者用字典替换了数组。相较之前所有资源都平铺开来的做法，新属性显式地做了 bundle 层面的分组。有组织、有纪律！CocoaPods 官方显然更推荐 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resource_bundles&lt;/code&gt;。原因有二：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;如前所述，用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resources&lt;/code&gt; 属性容易引起资源的命名冲突。诚然， &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resource_bundles&lt;/code&gt; 也有极小的可能在 bundle 名上起冲突，可那也比前者好处理。&lt;/li&gt;
+  &lt;li&gt;用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resources&lt;/code&gt; 属性指定的资源直接被拷贝到 client target（事实上 CocoaPods 会先运行脚本对 NIB，Asset Catalog，Core Data Model 等进行编译），这些资源无法享受 Xcode 的优化。这是官方文档的说法，但不清楚所指的优化是哪些（图片压缩？）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;即便如此，那为什么还有很多开源产品依然在用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resources&lt;/code&gt; 属性呢？&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;历史遗留问题。早些年用了这属性，现在运行也好好的，就不动了吧。&lt;/li&gt;
+  &lt;li&gt;随大流。貌似大家都这么用，应该是正确的，我也这么弄吧，懒得去看文档，抄抄改改呗。&lt;/li&gt;
+  &lt;li&gt;咱有奇技淫巧。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;很多库在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;podspec&lt;/code&gt; 里其实是这么写的。&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;resource&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Resources/MYLibrary.bundle&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;把资源加到形如 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MYLibrary.bundle&lt;/code&gt; 的 bundle 里。这样就使得 client target 资源在 mainBundle 根目录下，而各个 Pod 的自带资源则在外面套了个 bundle 后再被拷贝到 mainBundle 里，机智地解决了冲突 √。&lt;/p&gt;
+
+&lt;p&gt;还有一种解决方案，那就是在 Objective-C 开发中常见的加前缀法，即对每项资源加前缀。跟我一起说：NS 大法好！&lt;/p&gt;
+
+&lt;p&gt;当然，我还是建议大家照着 CocoaPods 推荐的来。&lt;/p&gt;
+
+&lt;h2 id=&quot;2-访问-bundle&quot;&gt;2. 访问 bundle&lt;/h2&gt;
+
+&lt;p&gt;在 CocoaPods 0.36 以前，pod 资源最后都会被直接拷贝到 client target 的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;[NSBundle mainBundle]&lt;/code&gt; 里。你可以用访问 mainBundle 里资源的方式访问它们。比如用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;+ (UIImage *)imageNamed:(NSString *)name&lt;/code&gt; 来访问 pod 的图片。&lt;/p&gt;
+
+&lt;p&gt;但是在 CocoaPods 0.36 之后，这件事情发生了一些变化。由于 iOS 8 Dynamic Frameworks 特性的引入，CocoaPods 能帮你打包 framework 了（撒花）。&lt;a href=&quot;http://blog.cocoapods.org/CocoaPods-0.36/&quot;&gt;0.36 版的 release note&lt;/a&gt;很详细地说明了加入 framework 特性所带来的变化。一个显著区别就是当你的 pod 库以 framework 形式被使用时，你的资源不是被拷贝到 mainBundle 下，而是被放到 pod 的最终产物—— &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;framework&lt;/code&gt; 里。此时，你必须保证自己在访问这个 framework 的 bundle，而不是 client target 的。&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSBundle&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;bundleForClass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;#&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ClassFromPodspec&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;#&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上面这段代码可以返回某个 class 对应的 bundle 对象。具体的，&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;如果你的 pod 以 framework 形式被链接，那么返回这个 framework 的 bundle。&lt;/li&gt;
+  &lt;li&gt;如果以静态库（&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.a&lt;/code&gt;）的形式被链接，那么返回 client target 的 bundle，即 mainBundle。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;但无论以哪种形式链接，在这个方法返回的 bundle 下都有你的 pod 资源。接下来要做就是去访问他们。我写了个简单的 category&lt;sup id=&quot;fnref:nsbundle&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:nsbundle&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;来获取 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyLibrary&lt;/code&gt; 的 bundle 对象。&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;resource_bundles&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;s1&quot;&gt;'MyLibrary'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'your/path/to/resources/*.png'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;@implementation&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;NSBundle&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;MyLibrary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSBundle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;my_myLibraryBundle&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;bundleWithURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;my_myLibraryBundleURL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSURL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;my_myLibraryBundleURL&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;NSBundle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSBundle&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;bundleForClass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MYSomeClass&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;URLForResource&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;MyLibrary&quot;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;withExtension&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;bundle&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;逻辑很简单：先拿到最外面的 bundle。 对 framework 链接方式来说就是 framework 的 bundle 根目录，对静态库链接方式来说就是 target client 的 main bundle，然后再去找下面名为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyLibrary&lt;/code&gt; 的 bundle 对象。&lt;/p&gt;
+
+&lt;p&gt;题外话，新的 bundle 策略利用 framework 的命名空间，有效防止了资源冲突。同时对 client 来说，他不需要为 framework 里的资源设置 build rules，如 storyboard，xib 一类需要编译的东西，缩短了编译时间，毕竟 framework 里的资源不需要 client 每次都编译了。我觉得很不错。&lt;/p&gt;
+
+&lt;h2 id=&quot;3-图片资源&quot;&gt;3. 图片资源&lt;/h2&gt;
+
+&lt;p&gt;前面我们已经讨论过资源被放到不同 bundle 所带来的访问方式的不同。这次说一下图片的坑，毕竟它们是最常见的资源之一。&lt;/p&gt;
+
+&lt;h3 id=&quot;一般的图片访问&quot;&gt;一般的图片访问&lt;/h3&gt;
+
+&lt;p&gt;还是针对 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resource_bundles&lt;/code&gt;。&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;resource_bundles&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;s1&quot;&gt;'MyLibrary'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'your/path/to/resources/*.png'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;写了一个方便访问 pod 图片的 category&lt;sup id=&quot;fnref:uiimage&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:uiimage&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#import &quot;UIImage+MyLibrary.h&quot;
+#import &quot;NSBundle+MyLibrary.h&quot;
+&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;@implementation&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;UIImage&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;MyLibrary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UIImage&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;my_bundleImageNamed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSString&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;self&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;my_imageNamed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;inBundle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSBundle&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;my_myLibraryBundle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UIImage&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;my_imageNamed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSString&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;inBundle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSBundle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#if __IPHONE_OS_VERSION_MIN_REQUIRED &amp;gt;= __IPHONE_8_0
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UIImage&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;imageNamed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;inBundle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;compatibleWithTraitCollection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#elif __IPHONE_OS_VERSION_MAX_ALLOWED &amp;lt; __IPHONE_8_0
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UIImage&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;imageWithContentsOfFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;pathForResource&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ofType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;png&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#else
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UIImage&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;respondsToSelector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;@selector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;imageNamed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inBundle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compatibleWithTraitCollection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)])&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UIImage&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;imageNamed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;inBundle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;compatibleWithTraitCollection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UIImage&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;imageWithContentsOfFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;pathForResource&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ofType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;@&quot;png&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#endif
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;@end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;+ imageNamed:inBundle:compatibleWithTraitCollection:&lt;/code&gt; 这个方法 iOS 8 才加入的，所以做了条件编译。&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;+ imageWithContentsOfFile:&lt;/code&gt; 没有缓存机制不开心。当然，如果你坚持用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resources&lt;/code&gt; 把自己的资源被拷贝到 main bundle 下，然后直接用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;+ imageNamed:&lt;/code&gt;的话，我敬你是条汉子。&lt;/p&gt;
+
+&lt;h3 id=&quot;asset-catalog&quot;&gt;Asset Catalog&lt;/h3&gt;
+
+&lt;p&gt;理论上一个 bundle 里可以有一个 asset catalog。Xcode 最后会把它们编译成 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Assets.car&lt;/code&gt; 文件。&lt;/p&gt;
+
+&lt;p&gt;我觉得把 pod 的图片扔到 asset catalog 里，然后把 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyLibraryImages.xcassets&lt;/code&gt; 放到 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resource_bundles&lt;/code&gt; 里，也能在代码里通过一定办法访问到图片对象。然而我尝试了各种姿势，依然无法解锁该成就。反倒是用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resources&lt;/code&gt; 属性可以成功，匪夷所思。&lt;/p&gt;
+
+&lt;p&gt;Google 一圈后在 CocoaPods 的 issue 里发现了&lt;a href=&quot;https://github.com/CocoaPods/CocoaPods/issues/2292&quot;&gt;#2292&lt;/a&gt;，然后 StackOverflow 上又&lt;a href=&quot;http://stackoverflow.com/questions/23835052/load-image-from-cocoapods-resource-bundle&quot;&gt;有人说不行&lt;/a&gt;。我也犯迷糊了。&lt;/p&gt;
+
+&lt;p&gt;现在想到的临时解决方案是，如果你用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resources&lt;/code&gt; 属性指定资源，那么把图片放到 asset catalog 后，用下列方式是可以拿到图片的。&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;NSBundle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NSBundle&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;bundleForClass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MYClass&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;UIImage&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;image&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UIImage&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;imageNamed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;inBundle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;compatibleWithTraitCollection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;而如果你用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;resource_bundles&lt;/code&gt; 属性指定资源，请把图片从 asset catalog 里拿出来裸奔。&lt;/p&gt;
+
+&lt;p&gt;希望大家能指点一二，拜谢！&lt;/p&gt;
+
+&lt;h2 id=&quot;4-国际化和本地化&quot;&gt;4. 国际化和本地化&lt;/h2&gt;
+
+&lt;h3 id=&quot;怎么做&quot;&gt;怎么做&lt;/h3&gt;
+
+&lt;p&gt;做过国际化和本地化的同学都知道在代码里用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NSLocalizedString(key, comment)&lt;/code&gt; 来代替一般的字符串做国际化。通过在各种以&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.lproj&lt;/code&gt;结尾的目录下创建 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Localizable.strings&lt;/code&gt; 文件提供字符串键值对来做本地化。&lt;/p&gt;
+
+&lt;p&gt;对一个 pod 来说，如果要提供给 client 本地化资源，其流程也是类似的。不同的地方在于，你最好以 pod 名来命名字符串文件，比如 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyLibrary.strings&lt;/code&gt;。此外，在做国际化时要把 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NSLocalizedString(key, comment)&lt;/code&gt; 换成 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NSLocalizedStringFromTableInBundle(key, tbl, bundle, comment)&lt;/code&gt;，毕竟你的这些本地化资源也要跟着 bundle 走。其中 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tbl&lt;/code&gt; 就是你 pod 的本地化字符串文件名，如例子是 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyLibrary&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;我们可以用一个宏定义来简化工作。&lt;/p&gt;
+
+&lt;div class=&quot;language-objc highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#define MYLibraryLocalizedString(key, comment) \
+NSLocalizedStringFromTableInBundle((key), @&quot;MyLibrary&quot;, [NSBundle my_myLibraryBundle], (comment))
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;把原先的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NSLocalizedString(key, comment)&lt;/code&gt; 替换成 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MYLibraryLocalizedString(key, comment)&lt;/code&gt; 就行了。好奇心强的同学不妨深入看看这些宏定义最后到底是些什么东西。&lt;/p&gt;
+
+&lt;p&gt;剧透一下，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NSLocalizedString(key, comment)&lt;/code&gt; 的本质就是 NSBundle 的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;- localizedStringForKey:value:table:&lt;/code&gt; 方法。&lt;/p&gt;
+
+&lt;h3 id=&quot;为什么没效果&quot;&gt;为什么没效果&lt;/h3&gt;
+
+&lt;p&gt;当你满心欢喜地在代码里完成了国际化，把本地化字符串也翻译好了，运行程序，发现里面语言愣是只有英文，你怎么想？key 写错了？没有。文件名没弄对？也不是。停停停，请先检查以下几点：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;请检查你的设备是否已经设置为你要测的语言；&lt;/li&gt;
+  &lt;li&gt;请确保你在工程层面也声明了要做本地化。具体的，点开 Project 设置，点到 Info 一栏，看看 Localization 那块有没有加对应的语言。&lt;/li&gt;
+  &lt;li&gt;请确保你在添加新文件后运行了 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pod update&lt;/code&gt; 命令。（写 pod 遇到的各种二逼问题多半因为没跑这条命令）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;5-结语&quot;&gt;5. 结语&lt;/h2&gt;
+
+&lt;p&gt;坑我已经踩过了，谁再踩谁二逼。倘若你也在开发过程中踩过奇奇怪怪的坑，欢迎告诉我。至少……能让这世界少点二逼吧……你说呢？&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:nsbundle&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://gist.github.com/yimingtang/08e2e48969e42935b42c&quot;&gt;NSBundle+MyLibrary&lt;/a&gt; &lt;a href=&quot;#fnref:nsbundle&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:uiimage&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://gist.github.com/yimingtang/04ac9ff730e8ee82c1ee&quot;&gt;UIImage+MyLibrary&lt;/a&gt; &lt;a href=&quot;#fnref:uiimage&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name>毅明</name><email>yimingnju@gmail.com</email></author><summary type="html"></summary></entry><entry><title type="html">如何高效使用电子邮件</title><link href="https://blog.xianqu.org/2014/08/tips-for-using-email" rel="alternate" type="text/html" title="如何高效使用电子邮件" /><published>2014-08-05T03:55:02+00:00</published><updated>2014-08-05T03:55:02+00:00</updated><id>https://blog.xianqu.org/2014/08/tips-for-using-email</id><content type="html" xml:base="https://blog.xianqu.org/2014/08/tips-for-using-email">&lt;p&gt;前些天拜读了 &lt;a href=&quot;https://twitter.com/kavinyao&quot;&gt;@kavinyao&lt;/a&gt; 同学的文章&lt;a href=&quot;http://o.hackab.it/2014/07/how-to-manage-emails/&quot;&gt;如何高效使用电子邮件&lt;/a&gt;。我觉得写得很好很实用。我自己经历过用户和邮件客户端开发者这两种角色，说起来对电子邮件也有过深入了解，积累了一些使用心得，于是就写了这篇同题文章。&lt;/p&gt;
+
+&lt;p&gt;Kavin 在他的文章中提了不少建议，它们是：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;选择靠谱的服务商；&lt;/li&gt;
+  &lt;li&gt;主动标记垃圾邮件；&lt;/li&gt;
+  &lt;li&gt;取消订阅邮件；&lt;/li&gt;
+  &lt;li&gt;及时归档邮件；&lt;/li&gt;
+  &lt;li&gt;按需使用代收服务；&lt;/li&gt;
+  &lt;li&gt;开启新邮件提醒。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;我相当赞同上述建议。在 Kavin 的基础上我再补充一些能让生活更加轻松的技巧。&lt;/p&gt;
+
+&lt;h2 id=&quot;1-明确功能使用多个邮箱&quot;&gt;1. 明确功能，使用多个邮箱&lt;/h2&gt;
+
+&lt;p&gt;邮件作为一种互联网基础通讯手段，它肩负着诸多功能。在学校，你和导师用邮件交流课题；在公司，你和同事用邮件讨论工作；在家里，你用邮件确认买买买订单……因此，用单个邮箱实现所有功能必然会使你的邮箱杂乱不堪，难以维护。针对不同功能，使用对应的邮箱是很必要的。比较常见的配置可能是这样的：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;一个你不在乎会有多少垃圾邮件，不在乎隐私的邮箱用于注册不常用、不知名的网站（对，这就是一个垃圾箱兼马甲）；&lt;/li&gt;
+  &lt;li&gt;一个楼主好人，一生平安的邮箱，用于你懂的（这也是一个垃圾箱）；&lt;/li&gt;
+  &lt;li&gt;一个学校/工作邮箱，处理学校/工作事务；&lt;/li&gt;
+  &lt;li&gt;一个私人邮箱，用来处理私人的，安全敏感的事。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;分离邮箱功能的一大好处是你可以从邮箱层面减少垃圾信息的污染，简化在每个邮箱内对邮件的处理过程。比如工作邮箱就基本只有工作邮件，全神贯注处理工作即可。你不用担心乱七八糟的广告塞满你的邮箱。而楼主好人邮箱，只管享受楼主的恩惠吧。&lt;/p&gt;
+
+&lt;p&gt;使用多个邮箱也能一定程度上减小身份暴露的可能性。一个邮箱行天下被人肉出来会很尴尬的不是么？&lt;/p&gt;
+
+&lt;p&gt;对于不同功能的邮箱你应当采取不同的安全策略。前两种邮箱你可能丢了偷了不心疼，泄露不了多少隐私，而后者两者你得格外注意，高强度的密码是必要的。&lt;/p&gt;
+
+&lt;h2 id=&quot;2-合理使用归类功能&quot;&gt;2. 合理使用归类功能&lt;/h2&gt;
+
+&lt;p&gt;最简单的，也是绝大多数服务提供商都有的归类方式：邮件目录。&lt;/p&gt;
+
+&lt;p&gt;你可以把不同类型的邮件存入相应的目录，以此来保持邮箱的整洁。例如 GTD 爱好者倾向于创建形如 “to-do”, “doing”, “done” 这样的目录。也有同学会弄个“订阅”，“基友”，“买买买”这样的目录。和整理房间一样，有序总是让人觉得清爽的。&lt;/p&gt;
+
+&lt;p&gt;如果你用 Gmail，那么 label 功能对洁癖、强迫症患者、处女座来说绝对是杀手锏。&lt;/p&gt;
+
+&lt;h2 id=&quot;3-注意操作细节&quot;&gt;3. 注意操作细节&lt;/h2&gt;
+
+&lt;p&gt;前两条我们侧重于管理邮件。这一条，我想说的是用邮件。一封邮件对用户可见的部分是：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;收件人，抄送，密送（最好注意其中的差别）；&lt;/li&gt;
+  &lt;li&gt;标题；&lt;/li&gt;
+  &lt;li&gt;正文；&lt;/li&gt;
+  &lt;li&gt;附件；&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;撰写一封邮件时请务必仔细检查这四个区域。很多同学不注意细节，结果往往会让人很尴尬。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;“您好，这是我的简历”，然后你忘贴了简历。&lt;/li&gt;
+  &lt;li&gt;老师群发邮件让各位回复自己的家庭信息，你一不小心给整个邮件列表都回了。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;此外，标题如何写，正文怎么排版，其中道理多了去了。我不在这里展开，但希望各位能注意这些细节，免得因为自己的粗心吃了亏。&lt;/p&gt;
+
+&lt;h2 id=&quot;4-善用别名-gmail&quot;&gt;4. 善用别名 (Gmail)&lt;/h2&gt;
+
+&lt;p&gt;Gmail 大法好。 Alias 好了又好。通过别名，你可以用一个邮箱变出无数多个马甲。使用 Gmail Alias 很简单：在原用户名后添加“+”号和任意名称即可。举个栗子：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;原邮箱地址:
+example@gmail.com
+
+别名:
+example+xianqu@gmail.com,
+example+youreagoodman@gmail.com,
+example+nozuonodie@gmail.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;对这些别名地址发邮件就会送到原邮箱地址了。使用别名的一些场合可以是：用同一个 Gmail 邮箱注册新的服务。一个狡猾的技巧是使用用户名+服务名的别名来注册。这样如果该服务卖你信息，你可以很容易地从收件人看出是谁出卖了你。&lt;/p&gt;
+
+&lt;h2 id=&quot;5-巧用过滤器-gmail&quot;&gt;5. 巧用过滤器 (Gmail)&lt;/h2&gt;
+
+&lt;p&gt;洁癖，整理控，处女座，强迫症患者的又一大利器。有多强大呢？你可以设定一些规则，让服务器自动帮你预处理邮件。比如自动归类，自动标记等。总之，过滤器就是：机器能做的绝不自己弄，我们就是懒啊就是懒。感兴趣的同学不妨一试。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;以上就是我使用电子邮件的一些小技巧。篇幅限制，未能说得太细，但仍然希望对你有所帮助。如果你对邮件使用有什么好的建议和心得，欢迎留言。&lt;/p&gt;</content><author><name>毅明</name><email>yimingnju@gmail.com</email></author><summary type="html">前些天拜读了 @kavinyao 同学的文章如何高效使用电子邮件。我觉得写得很好很实用。我自己经历过用户和邮件客户端开发者这两种角色，说起来对电子邮件也有过深入了解，积累了一些使用心得，于是就写了这篇同题文章。</summary></entry><entry><title type="html">GitHub</title><link href="https://blog.xianqu.org/2014/07/github" rel="alternate" type="text/html" title="GitHub" /><published>2014-07-09T08:53:02+00:00</published><updated>2014-07-09T08:53:02+00:00</updated><id>https://blog.xianqu.org/2014/07/github</id><content type="html" xml:base="https://blog.xianqu.org/2014/07/github">&lt;p&gt;About three days ago, &lt;a href=&quot;https://github.com/&quot;&gt;GitHub&lt;/a&gt;, a web-based hosting service for software development projects, sent me an email, in which they told me that my plan was going to expire in 7 days. It reminded me that I had been using GitHub private features for almost two years. How time flies!&lt;/p&gt;
+
+&lt;p&gt;Two years ago, to be more accurate, in the summer of 2012, I was a little undergraduate student who was going to start an internship at a startup company. Like most of my classmates, I had made a few toys at school but never worked on a real software project before. A commercial software product is totally different from a course toy. It should be designed well and have high quality. Therefore I searched the Internet for open-source projects in order to find some inspiration. To my surprise, a lot of excellent projects were hosted on GitHub. I had used GitHub before, but I had only put my course assignments there. I had never noticed the community. Then I began to deepen my knowledge of Git and GitHub for the first time. The more I explored GitHub, the more I loved it. There’re all kinds of projects which you can’t wait to try out. GitHub is really great. Not only does it provide super awesome hosting service, but it also gets so many cool people together, just like its slogan: ==”Build software better, together.”==.&lt;/p&gt;
+
+&lt;p&gt;Although people &lt;a href=&quot;https://github.com/blog/1826-follow-up-to-the-investigation-results&quot;&gt;made mistakes&lt;/a&gt;, GitHub is still my first choice for software projects hosting service. I got two GitHub T-shirts from the holy C2C website &lt;a href=&quot;http://taobao.com/&quot;&gt;Taobao&lt;/a&gt; in China three weeks ago. And I continued my GitHub plan just now. I think time is more valuable than money. I’m not sure if I could setup a GitHub-like hosting system in a short time. And I believe I can’t find a place better than GitHub currently. You know, I can tell you lots of reasons, but, the most important, I love it.&lt;/p&gt;</content><author><name>毅明</name><email>yimingnju@gmail.com</email></author><summary type="html">About three days ago, GitHub, a web-based hosting service for software development projects, sent me an email, in which they told me that my plan was going to expire in 7 days. It reminded me that I had been using GitHub private features for almost two years. How time flies!</summary></entry><entry><title type="html">Soda</title><link href="https://blog.xianqu.org/2014/06/soda" rel="alternate" type="text/html" title="Soda" /><published>2014-06-28T12:24:31+00:00</published><updated>2014-06-28T12:24:31+00:00</updated><id>https://blog.xianqu.org/2014/06/soda</id><content type="html" xml:base="https://blog.xianqu.org/2014/06/soda">&lt;p&gt;My blog has played with Octopress for about two years, during which I never changed the default blogging theme. Therefore, I decided to make some difference. A few months ago, I found a minimal white theme called whitespace. However, the project itself is not so good as its appearance. So, I made some tweaks and sent a pull request to the repository as usual. Unfortunately, it wasn’t merged.&lt;/p&gt;
+
+&lt;p&gt;“Why don’t you write your own? ==You are a programmer!==”, I said to myself. A week later, I made &lt;a href=&quot;https://github.com/yimingtang/soda&quot;&gt;Soda&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Soda is a blogging framework based on &lt;a href=&quot;http://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt;, a static website generator. All I did in Soda is to meet my personal needs. This blog is somewhat a live demo of the project. If you’re interested in it, give the repository a visit.&lt;/p&gt;
+
+&lt;p&gt;Feel free to open an issue if you have any problems. Pull requests are welcome. Enjoy!&lt;/p&gt;</content><author><name>毅明</name><email>yimingnju@gmail.com</email></author><summary type="html">My blog has played with Octopress for about two years, during which I never changed the default blogging theme. Therefore, I decided to make some difference. A few months ago, I found a minimal white theme called whitespace. However, the project itself is not so good as its appearance. So, I made some tweaks and sent a pull request to the repository as usual. Unfortunately, it wasn’t merged.</summary></entry><entry><title type="html">A New Host</title><link href="https://blog.xianqu.org/2014/06/a-new-host" rel="alternate" type="text/html" title="A New Host" /><published>2014-06-08T05:33:36+00:00</published><updated>2014-06-08T05:33:36+00:00</updated><id>https://blog.xianqu.org/2014/06/a-new-host</id><content type="html" xml:base="https://blog.xianqu.org/2014/06/a-new-host">&lt;p&gt;If you ping &lt;a href=&quot;http://blog.xianqu.org&quot;&gt;blog.xianqu.org&lt;/a&gt;, you may find that I’ve already move it to a new host which you are visiting now. Why?&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;It’s wonderful to have my own VPS. I’d like to try some SA work.&lt;/li&gt;
+  &lt;li&gt;I decided to deploy a sample app on a VPS after I had gone through the amazing &lt;a href=&quot;http://www.railstutorial.org/book&quot;&gt;Rails Tutorial&lt;/a&gt; book.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Anyway, I must say thank you to my friend &lt;a href=&quot;https://twitter.com/clippit&quot;&gt;@clippit&lt;/a&gt; who has provided me with a virtual host during the last two years.&lt;/p&gt;
+
+&lt;p&gt;It’s not easy for me, a beginner, to setup a Linux server for the first time. I googled a lot and spent a whole night dealing with various problems. Fortunately, all things go well now. I created a simple &lt;a href=&quot;https://gist.github.com/yimingtang/d339a70078d9ab1ff42c&quot;&gt;gist&lt;/a&gt; for those who are curious about these.&lt;/p&gt;
+
+&lt;p&gt;By the way, the new site is running on DigitalOcean. Here’s a &lt;a href=&quot;https://www.digitalocean.com/?refcode=01655cb63868&quot;&gt;referral code link&lt;/a&gt; if you are interested in the VPS service.&lt;/p&gt;</content><author><name>毅明</name><email>yimingnju@gmail.com</email></author><summary type="html">If you ping blog.xianqu.org, you may find that I’ve already move it to a new host which you are visiting now. Why?</summary></entry><entry><title type="html">My Open Source Cocoa Controls</title><link href="https://blog.xianqu.org/2014/02/my-open-source-cocoa-controls" rel="alternate" type="text/html" title="My Open Source Cocoa Controls" /><published>2014-02-16T12:10:52+00:00</published><updated>2014-02-16T12:10:52+00:00</updated><id>https://blog.xianqu.org/2014/02/my-open-source-cocoa-controls</id><content type="html" xml:base="https://blog.xianqu.org/2014/02/my-open-source-cocoa-controls">&lt;p&gt;I have been writing Objective-C for about 18 months. When I started working on an iOS application in July 2012, I knew little about Objective-C and Cocoa. There’re tones of articles and books teaching you how to write Objective-C, but, to me, the most useful resources are real open source projects.&lt;/p&gt;
+
+&lt;p&gt;I learned a lot by reading the source code. Beside basic programming languages, lots of best practices are shown in a well-written open source project. Thanks to the version control systems, sometimes I’m even able to see the whole development process. I learned how to make design decisions according to the context. I realized it’s more important to get things done than just keeping a perfect idea in my mind. That is to say, to achieve the goals, workarounds and tricks are acceptable and should be taken into consideration. What’s more, while reading source code, I was guessing the aims of every piece of code. That’s just like you are typing together with the author.&lt;/p&gt;
+
+&lt;p&gt;Open source also plays a significant role in modern software development. Note I’m not going to talk this broadly. It may result in tones of topics. I just want to tell you that I can’t build my app without the help of so many third-party open source components. I can’t even imagine it.&lt;/p&gt;
+
+&lt;p&gt;Anyway, I benefit a lot from open source. Open source is wonderful. So, here comes the main point of this post. To give back to the community, I released two cocoa controls days ago. They are &lt;a href=&quot;https://github.com/krafttuc/TYMProgressBarView&quot;&gt;TYMProgressBarView&lt;/a&gt; and &lt;a href=&quot;https://github.com/krafttuc/TYMActivityIndicatorView&quot;&gt;TYMActivityIndicatorView&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;TYMProgressBarView is a simple progress bar. It provides many appearance options for customizing. You will be happy to play with it and create your own progress bar.&lt;/p&gt;
+
+&lt;p&gt;TYMActivityIndicatorView is an activity indicator view with extra features. Most of the behaviors are much like those of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UIActivityIndicatorView&lt;/code&gt;. The killer feature is that it allows you rotating images. That means you can easily implement all kinds of custom activity indicators by replacing images.&lt;/p&gt;
+
+&lt;p&gt;Both of them are super simple and easy to use. I bet you’ll like them.&lt;/p&gt;</content><author><name>毅明</name><email>yimingnju@gmail.com</email></author><category term="小小技术" /><summary type="html">I have been writing Objective-C for about 18 months. When I started working on an iOS application in July 2012, I knew little about Objective-C and Cocoa. There’re tones of articles and books teaching you how to write Objective-C, but, to me, the most useful resources are real open source projects.</summary></entry><entry><title type="html">希望不会太晚</title><link href="https://blog.xianqu.org/2013/09/its-never-too-late" rel="alternate" type="text/html" title="希望不会太晚" /><published>2013-09-26T07:08:00+00:00</published><updated>2013-09-26T07:08:00+00:00</updated><id>https://blog.xianqu.org/2013/09/its-never-too-late</id><content type="html" xml:base="https://blog.xianqu.org/2013/09/its-never-too-late">&lt;p&gt;&lt;img src=&quot;/images/2013-09-vocabularies.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;今天（2013 年 9 月 26 日）距离我本科毕业已经快三个月了。三个星期前，我成了研究生大部队的一员。而在两天前，我的女朋友离开我了，独自踏上了去英国的求学征程。
+在这件事情上，我表现地很不争气，没有给予她更多的正能量。焦躁不安，婆婆妈妈，情绪变化无常……这也是我在过去半年内的心理状态。&lt;/p&gt;
+
+&lt;p&gt;回顾自己四年的本科生活。如果按时间顺序来编排，它大概是这样的。&lt;/p&gt;
+
+&lt;h2 id=&quot;大一焦躁和迷茫&quot;&gt;大一，焦躁和迷茫。&lt;/h2&gt;
+
+&lt;p&gt;第一次摆脱了家长，第一次摆脱了高中的校服，我很兴奋，因为眼前有大把时间可以挥霍，我可以做很多事。大学就像麻辣烫，你可以往里面放很多菜。
+如果放得好自然是好吃得没话说。如果放得不好，那么最后这碗像屎一样的东西还是得自己吃掉。我很迷茫，我并不清楚自己想吃什么味道的麻辣烫。于是，我尝试了很多东西。我参加了社团，参加了学生会、团委，并和我现在的女朋友玩起了暧昧。就这样糊里糊涂，我很快地度过了第一年。大一结束时，由于非学习性的活动太多，我在学分绩上吃了苦头。我开始意识到学习的重要性。&lt;/p&gt;
+
+&lt;h2 id=&quot;大二追赶和转折&quot;&gt;大二，追赶和转折。&lt;/h2&gt;
+
+&lt;p&gt;因为在学习上吃了亏，我开始担心我的未来，于是我把更多时间投入到了课业上。于此同时，我发现自己的学霸室友开始准备 GRE 了。我的女朋友也有出国的意向，开始重修刷分。我也想出国，但是看着大一犯下的错误，我心里很纠结。到底要不要出去是个问题。此前，我几乎没有设计过我的未来，依照所谓的“一切随缘”的想法过日子。我一度答应妹子陪她准备英语，然而因为一场家庭变故，我食言了。我仅仅是追赶当年的学业，而没有替未来做任何准备。这是故事的一个转折点。&lt;/p&gt;
+
+&lt;h2 id=&quot;大三鼓楼荒废&quot;&gt;大三，鼓楼，荒废。&lt;/h2&gt;
+
+&lt;p&gt;作为南京大学最为屌丝的院系，我们在第三年被极其特殊地安排到鼓楼校区上课。全年级搬迁。鼓楼是个乱糟糟的，浮躁的，风花雪月的地方，我至今还是不喜欢它。
+自己年轻不懂事，除了上课外，我把相当一部分时间奉献给了游戏。而仙林、鼓楼校区的隔离，让我和妹子进入了半异地恋状态。感情出现过很多次危机……当她需要你，
+而你在那睡懒觉、打游戏，而不是一同面对生活的苦难，这种行为简直太操蛋了。&lt;/p&gt;
+
+&lt;h2 id=&quot;大四实习实习&quot;&gt;大四，实习实习。&lt;/h2&gt;
+
+&lt;p&gt;由于，服从了保研的安排，我整个大四都在南京的一家移动互联网创业公司实习。我第一次知道了现实中的软件开发是什么样子，第一次知道工作是什么样子。从最初的兴奋莫名，到如今的习以为常。这一年是充满挑战的一年，什么都是第一次。而这也是挫折颇多的一年，产品难产，工作生活失衡。感触良多。&lt;/p&gt;
+
+&lt;p&gt;我的南大四年，在六月的某一天，永远成为了记忆。我不知道若干年后，自己回想起来又会是什么心态。但我现在很清楚，这四年里，自己很多时候做得不对。
+有太多的遗憾，太多的过错。我很想跑回去告诉刚进大学的自己，我如今的想法。可惜，木已成舟，后悔没有半点作用，世界还是照样马不停蹄地往前走。&lt;/p&gt;
+
+&lt;p&gt;研究生开学，我很沮丧。难道已经堕落成这种样子了吗？这不是我想要的！即使所有人都告诉我，留在国内读研并找一份过得去的工作，这对你的当前状况来说是最合理的选择，它更安全。你要知道你不是为了自己而活着，你身后还有你的父母。是啊，很“合理”。可是，内心告诉我，这件事让我很不开心。尽管努力调整心态，但依然没有起色。&lt;/p&gt;
+
+&lt;p&gt;迷茫之际，碰巧看了朋友写的&lt;a href=&quot;http://hackab.it/2013/08/what-i-wish-i-knew-when-i-was-20/&quot;&gt;What I Wish I Knew When I Was 20&lt;/a&gt;感慨不已。
+于是我把原书拿出来认真地读了一遍。最大的感触是：任何情况下，你都能找到成功的机会。与其抱怨，不如赶紧动手。什么事情都不会太晚。&lt;/p&gt;
+
+&lt;p&gt;所谓“遵从内心”，我问自己想要什么，于是，我知道自己该怎么做了。&lt;/p&gt;
+
+&lt;p&gt;两个星期前，我把自己的想法告诉了亲人和朋友。人们看法不一。有全力支持的，也有极力反对的。我又问自己该怎么办？和猜硬币一样，当你扔出银币的那一瞬间，你就知道自己的选择了。我还年轻，为什么不去闯一闯，多看看外面的世界呢？人生苦短，我要出去。&lt;/p&gt;
+
+&lt;p&gt;以前我做过类似的决定，我知道如果不立刻下手，我就会放弃。我必须动真格，并且破釜沉舟，少给自己留后路，这样我才能像疯狗一样。十多天前，我下定决心开始准备 GRE。过来人告诉我这是极其痛苦的过程，但我知道只要我能坚持我一定会成功。这和&lt;a href=&quot;http://blog.xianqu.org/2013/07/run-forrest-run/&quot;&gt;跑步&lt;/a&gt;是一样的，如今我能在 70 分钟内跑完 10 公里。&lt;/p&gt;
+
+&lt;p&gt;虽然人们一再告诫做事千万不能好高骛远。但我还是想在立书为证。我希望在 10 月底时能完成 GRE 单词的第一轮学习。在 11 月底时能认出 80%的单词。到 1 月能有随时上考场的状态。引用我妹子喜欢的一个词“前路亦雨”。未来非定数，管它是风是雨，我能做的就是尽量做好准备，不是吗？&lt;/p&gt;</content><author><name>毅明</name><email>yimingnju@gmail.com</email></author><category term="闲话" /><summary type="html"></summary></entry><entry><title type="html">Run! Forrest! Run!!!</title><link href="https://blog.xianqu.org/2013/07/run-forrest-run" rel="alternate" type="text/html" title="Run! Forrest! Run!!!" /><published>2013-07-15T09:03:00+00:00</published><updated>2013-07-15T09:03:00+00:00</updated><id>https://blog.xianqu.org/2013/07/run-forrest-run</id><content type="html" xml:base="https://blog.xianqu.org/2013/07/run-forrest-run">&lt;p&gt;电影《阿甘正传》里，当阿甘被小伙伴们欺负时，珍妮对阿甘说：&lt;em&gt;Run! Forrest! Run!&lt;/em&gt; 于是阿甘开始跑，不回头地向前跑。他跑掉了支架，甩掉了追他的“坏孩子”，跑过了田野，跑过了桥梁，跑过了街道。留下路人的惊叹和疑问：这孩子是谁？妈妈曾对阿甘说：&lt;em&gt;If you are ever in trouble, don’t try to be brave, just run, just run away.&lt;/em&gt; 初看来这话是带了点消极意味的，不过有时候与其逞强，不如保全自己，这么说又显得很有道理。阿甘很听话，所以在阿甘郁闷时，他能想到的就是跑，从美国的东海岸跑到了西海岸，又从西海岸跑回了东海岸。大家问阿甘为什么要跑？是为了世界和平吗？是为了女性权利吗？或者是为了环境？为了动物？为了核武器？阿甘说，其实我就是想跑，没什么特别的原因。&lt;/p&gt;
+
+&lt;p&gt;七月的第一天，我想跑，于是我去学校的操场怒刷了 5 圈。在夏日湿热的空气里，汗水湿透了我的 T 恤，流进了我的眼，我的嘴。咸咸的汗味掀起了七月跑步的序幕。抱歉，让你起鸡皮疙瘩了。如果你认为我取一个这么有杀伤力的标题外加稍带装逼样的开头，是为了大谈人生和跑步的关系，那么你就错了。我只是想分享一下最近跑步的感受。&lt;/p&gt;
+
+&lt;p&gt;我和阿甘不同，阿甘可以没有任何理由地从美国的一边跑到另一边，然后再跑回去。我只能让这种“没有任何理由”的状态持续一天。决定长期跑步是有很多原因的。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;我觉得自己应该注意健康，各项数据不能再差了。&lt;/li&gt;
+  &lt;li&gt;我得找一样长期有效的寄托，整天玩游戏是不好的，整天工作是不好的，总是想姑娘也是不好的。&lt;/li&gt;
+  &lt;li&gt;周围所有人都觉得我肥，尤其是肚子。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;抛开其他原因，单单为了第三条我也要去跑步。让你们嘲笑我，改天我跑个半程马拉松给你们看看！&lt;/p&gt;
+
+&lt;p&gt;因此，在本科毕业后的第二天，7 月的第一天，我开始了跑步。在此之前，我最讨厌的就是跑，尤其是长跑。跑步带给我的从来都不是酣畅淋漓的享受，而是酸痛，呼吸困难，将死未死。大一、大二每学年的 2,400 米测试对我来说简直是梦魇。我从来没有幻想过自己能跑出 3000 米。所以，一开始我很小心，每次只跑 2,000 米，一旦觉得自己难以坚持，就停下来走。后来我想了想，既然口口声声说自己要“长期”跑步，为什么不专业点呢？我咬咬牙在淘宝买了 Fitbit Flex 的现货，用数据督促自己。我下载了几款跑步应用，按训练计划跑。其中有个叫 5K Pro 的 App，内容大致就是给你一个 9 周的跑步计划，让你最后能完成一次跑 5,000 的“壮举”。因此，我觉得自己如果能达到这个程度就了不得了。&lt;/p&gt;
+
+&lt;p&gt;事情的转折点出现在我看了&lt;a href=&quot;http://www.runbible.cn/thread-703-1-1.html&quot;&gt;这篇文章&lt;/a&gt;之后。我准备试一试。第二天，我一口气跑了 5,000 米。所以说，有些看似不可能完成的事，并没有想象中的那么难。关键是自己敢不敢去试一下，能不能找到章法。一旦突破了那层膜，前方就豁然开朗。在又跑了几次 5,000 米后，回头看看 2,400 真的不算什么。我第一次体会到了什么叫超越自我，与其看运动员们破各种记录，不如自己走上运动场，跑一跑，后者的快感远超前者。虽然和别人比成绩很烂，但是如果每次都能提高一点，那么你还是能获得相当强的成就感，这也能让自己坚持下去。&lt;/p&gt;
+
+&lt;p&gt;我喜欢拿数据说话，所以我很关心 Fitbit 的统计。我曾说会每天都把截图贴到 SNS 上。嗯，我正在执行。只要运动量没有达到目标，我就会很悲伤——又特么长肉了。顺便贴一下最近 9 天的数据：&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Date&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Steps&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Distance&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;7.5&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;3,638&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;2.57km&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;7.6&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;13,067&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;9.74km&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;7.7&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;13,442&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;9.96km&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;7.8&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;16,929&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;12.27km&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;7.9&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;14,834&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;10.98km&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;7.10&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;16,003&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;12.35km&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;7.11&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;8,755&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;6.2km&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;7.12&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;6,652&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;4.7km&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;7.13&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;21,483&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;16.24km&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;7 月 5 号是 Fitbit 刚到手那天，没有来得及记录。此后 7.11 和 7.12 两天没有跑步。虽然很多同学说 Fitbit 的数据不准，比真实数据大了 10%，但我觉得能反映大致情况，督促你锻炼，它的作用就达到了。&lt;/p&gt;
+
+&lt;p&gt;为了让自己更像一个跑步的人，我败了一双 Mizuno Rider 16 和一套廉价的跑步服。跑步最重要的一是人，二是鞋。买跑鞋并不是追求装备什么的，主要目的还是保护好身体，防止脚和膝盖受伤。
+选跑鞋其实是很讲究的，需要看你的脚型，跑步姿势什么的……总之就是一大堆事情。好在 Mizuno 家有个&lt;a href=&quot;http://myprecisionfit.com&quot;&gt;测脚的网站&lt;/a&gt;（这也是我选择买他家鞋的原因之一）。其实买鞋过程中还是出了点小问题的。那就是我没有买比自己平时穿的大半码到一码的鞋子！据说跑步时脚是会胀大的……其表现就是脚趾头会顶到鞋子，让你很不舒服。幸运的是，鞋子这种东西如果不舒服可以在 7 天内包退换。&lt;/p&gt;
+
+&lt;p&gt;至于买 T 恤和裤子完全是因为衣柜里没有半件适合长跑的衣服。纯棉的汗衫在汗多的情况下造成的影响是灾难级的。它会贴着你的前胸和后背，让你倍感压力。而且在汗冷掉后大有冰火两重天的感觉。所以透气，排汗能力强，宽松的服装也必不可少。此外，头上容易出汗的同学或许可以考虑一下导汗带。汗水流进眼睛里是我所不希望的。一来眼睛会感到不适，看不清路，二来你要用手去弄（或者拿衣服擦），很影响跑步的节奏。&lt;/p&gt;
+
+&lt;p&gt;虽然说装备是次要的，但我想一套跑步装可以让我在心理感觉舒适，能够放开了去跑。短期内，我应该还没法完成半程马拉松或者 10 千米的跑程，然而每周多跑 400 米还是能做到的。希望两周后能达到 6 千米的水准。&lt;/p&gt;
+
+&lt;p&gt;最后还是引用珍妮的话：&lt;em&gt;Run! Forrest! Run!&lt;/em&gt; 开心或者悲伤，都走出去跑一跑，感受风，感受自然，感受生命。&lt;/p&gt;</content><author><name>毅明</name><email>yimingnju@gmail.com</email></author><category term="闲话" /><summary type="html">电影《阿甘正传》里，当阿甘被小伙伴们欺负时，珍妮对阿甘说：Run! Forrest! Run! 于是阿甘开始跑，不回头地向前跑。他跑掉了支架，甩掉了追他的“坏孩子”，跑过了田野，跑过了桥梁，跑过了街道。留下路人的惊叹和疑问：这孩子是谁？妈妈曾对阿甘说：If you are ever in trouble, don’t try to be brave, just run, just run away. 初看来这话是带了点消极意味的，不过有时候与其逞强，不如保全自己，这么说又显得很有道理。阿甘很听话，所以在阿甘郁闷时，他能想到的就是跑，从美国的东海岸跑到了西海岸，又从西海岸跑回了东海岸。大家问阿甘为什么要跑？是为了世界和平吗？是为了女性权利吗？或者是为了环境？为了动物？为了核武器？阿甘说，其实我就是想跑，没什么特别的原因。</summary></entry><entry><title type="html">做出改变</title><link href="https://blog.xianqu.org/2013/07/make-a-change" rel="alternate" type="text/html" title="做出改变" /><published>2013-07-09T05:20:00+00:00</published><updated>2013-07-09T05:20:00+00:00</updated><id>https://blog.xianqu.org/2013/07/make-a-change</id><content type="html" xml:base="https://blog.xianqu.org/2013/07/make-a-change">&lt;p&gt;南大本科四年的最后一天，天很热，我坐着地铁跑到仙林帮女朋友整理东西，然后把他们搬到楼下，或寄回家或卖掉。东西不算多，但湿热的空气外加长时间缺乏锻炼的身体，让我跑完两三个来回就喘不过气来。已经记不清上次帮女朋友做事是什么时候了，也不晓得自己是多久没有跑步，没有像样地锻炼了……从仙林搬到鼓楼后，自己稳稳地长了 20 斤肉，腹部堆积了大量的脂肪，大有中年大叔的范儿。一方面是自己生活习惯不好，临睡前喜欢吃东西，另一方面则是和从事的工作有关，除了吃饭就是坐在电脑屏幕前写代码。前者除了让我体重增加外，还使我得了传说中的慢性咽炎，甚是难受。一直想找时间去锻炼去健身，但很多时候仅仅坚持了两三天，又以工作繁忙为借口放弃了。吃那么多东西是要付出代价的，变胖了真的是活该。&lt;/p&gt;
+
+&lt;p&gt;我的一位老师在给学生的毕业寄语里是这样说的，人失败无非三种原因，一是懒，二是拖，三是不肯读书。好像我三样都占一点。临毕业前我去领大一时制定的“我的大学目标”，其中有一项是要养成良好的生活习惯，强壮身体，现在看来唏嘘不已。本科四年结束，没有达成这个成就，我很遗憾。当然，它只是众多遗憾中的一个……&lt;strong&gt;我觉得是时候做出改变了，就从锻炼身体开始。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;上个礼拜我入手了一个&lt;a href=&quot;http://www.fitbit.com/flex&quot;&gt;Fitbit Flex&lt;/a&gt;，它是一款佩戴式 tracker，可以收集我的活动记录，比如一天走的步数，里程数，睡眠质量等。买这东西不是因为它有多牛逼，而是想表达我的决心。给自己心理暗示，督促自己注意健康，加强锻炼。Fitbit 用下来还不错，以后写个体验报告？&lt;/p&gt;
+
+&lt;p&gt;虽然说“工欲善其身必先利其器”，但是对锻炼这种事来说，坚持才是第一要义。如果仅仅把这事放心里，我知道没过多久我就会停下来。所以，我想了个主意。那就是把每天的 Fitbit 数据晒到社交网站上去。这样就能给自己一点压力。嘿，人家都看着呢！（虽然很多人想的是，这傻逼又传照片，烦不烦啊？——不爱看是你的事，把我拉黑就行。）于此同时，我也在这里写文章，以表决心。&lt;/p&gt;
+
+&lt;p&gt;没有研究过健身，没有什么专业的计划，不求瞬间变成肌肉男，也不求快速减掉脂肪，只求能真正坚持做一件事。&lt;/p&gt;
+
+&lt;p&gt;我就列一下希望最近一个月达成的：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;禁夜宵，禁碳酸，减少垃圾食品的摄入&lt;/li&gt;
+  &lt;li&gt;1 点前睡，9 点前起&lt;/li&gt;
+  &lt;li&gt;至少 15,000 步/天&lt;/li&gt;
+  &lt;li&gt;至少慢跑 3,000 米/天&lt;/li&gt;
+  &lt;li&gt;周末游泳&lt;/li&gt;
+  &lt;li&gt;每周能去一到两次健身房（虽然我也不知道练什么，找个人带呗。：））&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;希望下个月这个时候上面这些都能完成~&lt;/p&gt;</content><author><name>毅明</name><email>yimingnju@gmail.com</email></author><category term="闲话" /><summary type="html">南大本科四年的最后一天，天很热，我坐着地铁跑到仙林帮女朋友整理东西，然后把他们搬到楼下，或寄回家或卖掉。东西不算多，但湿热的空气外加长时间缺乏锻炼的身体，让我跑完两三个来回就喘不过气来。已经记不清上次帮女朋友做事是什么时候了，也不晓得自己是多久没有跑步，没有像样地锻炼了……从仙林搬到鼓楼后，自己稳稳地长了 20 斤肉，腹部堆积了大量的脂肪，大有中年大叔的范儿。一方面是自己生活习惯不好，临睡前喜欢吃东西，另一方面则是和从事的工作有关，除了吃饭就是坐在电脑屏幕前写代码。前者除了让我体重增加外，还使我得了传说中的慢性咽炎，甚是难受。一直想找时间去锻炼去健身，但很多时候仅仅坚持了两三天，又以工作繁忙为借口放弃了。吃那么多东西是要付出代价的，变胖了真的是活该。</summary></entry><entry><title type="html">我为什么不用Interface Builder</title><link href="https://blog.xianqu.org/2013/06/why-i-dont-use-interface-builder" rel="alternate" type="text/html" title="我为什么不用Interface Builder" /><published>2013-06-28T09:53:00+00:00</published><updated>2013-06-28T09:53:00+00:00</updated><id>https://blog.xianqu.org/2013/06/why-i-dont-use-interface-builder</id><content type="html" xml:base="https://blog.xianqu.org/2013/06/why-i-dont-use-interface-builder">&lt;p&gt;在互联网上关于 Interface Builder 的争吵每天都在发生，用和不用大家都有一大堆的理由。最近看了&lt;a href=&quot;http://sam.roon.io/why-i-dont-use-interface-builder&quot;&gt;这篇文章&lt;/a&gt;，很多地方和作者有共鸣，结合自己的一些经历，就有了你现在所看到的东西，你可以把它当成前者的中文版。&lt;/p&gt;
+
+&lt;p&gt;一年前我开始做 iOS 开发，看的是&lt;a href=&quot;http://www.stanford.edu/class/cs193p/cgi-bin/drupal/&quot;&gt;Stanford 的 CS 193P&lt;/a&gt;。老头子推荐新手用 Storyboard 来做开发，因为它是可视化的，不太需要了解代码层的东西就能拖出界面，各种配置项可以通过勾选搞定，省去很多代码，相当傻瓜，此外 Storyboard 也让人对应用程序的活动流程一目了然。我对这种拖拽式的编程方式很不习惯：这不是代码出奇迹的节奏啊！&lt;/p&gt;
+
+&lt;p&gt;我开始做实际的项目。看了几个开源项目的代码后，我知道旧时代有个&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;xib&lt;/code&gt;格式的文件。这货是 Interface Builder 的产物，现在我们称他们为 NIB。用法和 Storyboard 差不多，可视化拖拽、配置。Storyboard 比较新，业界用的人不多，于是我很纠结，到底是听老头子的话用新东西，还是随大流试试单独的 NIB？初生牛犊不怕虎，反正没怎么做过 iOS 开发，就按课上说的来吧，我们团队用 Storyboard 拖 UI。一个月后，我提议弃用 Interface Builder，不用任何 NIB（包括 Storyboard）。直到现在只要是在我控制范围内，我都没再碰过任何 NIB，我更愿意用代码来生成。&lt;/p&gt;
+
+&lt;p&gt;不用 Interface Builder 的理由很多，对我来说主要有一下几点：&lt;/p&gt;
+
+&lt;h2 id=&quot;1-多人协作&quot;&gt;1. 多人协作&lt;/h2&gt;
+
+&lt;p&gt;从项目管理的角度来讲 NIB 就不应该被使用。你能保证自己从来不会在合并 NIB 时出现冲突吗？在一个稍有规模，多开发者的项目里，合并 NIB 简直就是梦魇。特别是多人共用一个 Storyboard 时，开发者将花费很多时间和精力去解决冲突，而不是去做比这更有意义的事。&lt;/p&gt;
+
+&lt;p&gt;当然，如果最终合并结果正确可信，那么很多同学还是可以忍受的。然而，合并毕竟是会出问题的，尤其是用 Git 自动合并。这些问题直到运行时才会出现！倘使测试力度不够，这就是潜在的隐患。此外，我们知道 NIB 是人不可读的，也就是说，对它做版本控制几乎没有意义。你没法从 diff 看出来半点名堂。倘使你使用的不是 NIB，而是一行一行的 Objective-C 代码，那么结果会好很多。&lt;/p&gt;
+
+&lt;h2 id=&quot;2-选择显式而非隐式&quot;&gt;2 选择显式而非隐式&lt;/h2&gt;
+
+&lt;p&gt;我喜欢用代码来完成各种东西，这样你打开一个 view 或者一个 view controller，就能看到所有东西。否则，看你代码的这位同学还得去找相应的 NIB。&lt;/p&gt;
+
+&lt;p&gt;NIB 同样也是滋生 bug 的温床，很多时候你调试了半天才发现，某个 bug 并不是出在自己的代码里，而是在 Interface Builder 的某个小角落里自己忘记给某个选项打上 √。如果所有的组件都由代码生成，那么在调试时就简单得多，你只要专注于和 View 有关的代码就快好了。选择显式地在代码里写 view，可以让你对 view 有强大的控制力。从初始化到布局、绘制你都能插手，在代码里你清楚地知道某个 view 的各个属性会是多少，而非交由 Interface Builder 来管理，这样虽然看上去代码行数多了，但它帮你减少了 bug 数量，节省了 debug 时间。&lt;/p&gt;
+
+&lt;h2 id=&quot;3-耦合&quot;&gt;3 耦合&lt;/h2&gt;
+
+&lt;p&gt;用 Interface Builder 去创建可复用的 view 会是一件很蛋疼的事。首先你需要拖拽出各种各样的组件，然后给每个组件设置属性，接着你要把 outlet 连接到要用到的代码块……某一次，你忘记连 outlet，然后你的程序就在 runtime crash 了。看，你又弄出了一堆 bug。对于各种零碎的 view 我更喜欢为他们写类，然后在里面实现各种我想要的东西，在需要用到这些 view 的时候生成对象就是了。如果我有什么错误，编译器大哥还能帮我检查。&lt;/p&gt;
+
+&lt;p&gt;使用 NIB 让我提心吊胆，它让程序变得不那么紧凑。很多需要内聚的东西，被分了出去。从实际的开发体验来讲就是东一块，西一块，切来切去我都觉得烦。一旦当你定制的 view 越来越多，NIB 就增多，然后呵呵。&lt;/p&gt;
+
+&lt;h2 id=&quot;4-布局&quot;&gt;4 布局&lt;/h2&gt;
+
+&lt;p&gt;我承认自己几乎没在 Interface Builder 用过各种 layout（包括 auto-layout）。我不清楚用 NIB 做 layout 是否困难。但我知道重写&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UIView&lt;/code&gt;的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;layoutSubviews&lt;/code&gt;让布局变得很简单。所有子元素的布局只要在这里设置就行了。需要重新布局时，调一下&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;setNeedsLayout&lt;/code&gt;就行。不用关心什么 Interface Builder 里各种 layout 概念，不用把布局代码分地方写（降低耦合）。只要稍加判断，让同一个 view 适应 iPhone 和 iPad 不是什么难事。给 iPad 和 iPhone 分别提供 NIB 这种事简直不能忍。&lt;/p&gt;
+
+&lt;h2 id=&quot;5-本地化&quot;&gt;5 本地化&lt;/h2&gt;
+
+&lt;p&gt;当 IB 遇到本地化会发生什么呢？我屮艸芔茻！只要涉及本地化的 NIB，都要你去投时间和体力做啊。点鼠标啊，设置啊，纯体力活！如果用代码，字符串用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NSLocalizedString(@&quot;Localizable String&quot;, @&quot;Comment&quot;)&lt;/code&gt;，然后在资源文件里翻译一下，轻轻松松。&lt;/p&gt;
+
+&lt;h2 id=&quot;6-小结&quot;&gt;6 小结&lt;/h2&gt;
+
+&lt;p&gt;Interface Builder 的初衷可能是希望帮助开发者节省写界面的时间和精力。可视化，表现层和数据分离都是很好的思想。但它在目前还不让人满意。它让多人协作变得困难，诱导拙劣的实践，降低可复用性，让你开发变慢……&lt;/p&gt;
+
+&lt;p&gt;我如果能不用 IB，就不用，作为一名程序员更应该用代码说话。从装逼角度来讲，这样才显得高端大气上档次不是吗？&lt;/p&gt;</content><author><name>毅明</name><email>yimingnju@gmail.com</email></author><category term="小小技术" /><summary type="html">在互联网上关于 Interface Builder 的争吵每天都在发生，用和不用大家都有一大堆的理由。最近看了这篇文章，很多地方和作者有共鸣，结合自己的一些经历，就有了你现在所看到的东西，你可以把它当成前者的中文版。</summary></entry></feed>
